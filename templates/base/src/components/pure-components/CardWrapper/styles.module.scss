@@ -1,0 +1,71 @@
+@use "sass:map";
+@use "@/assets/scss/variables.scss" as *;
+
+.customCardWrap {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+  margin-bottom: map.get($spacers, 3);
+  word-wrap: break-word;
+  background-clip: border-box;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color); // Use border-color instead of border
+  padding: 0;
+  border-radius: map.get($border-radii, lg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.customCardHeader {
+  padding: map.get($spacers, 1) map.get($spacers, 4);
+  border-top-left-radius: map.get($border-radii, lg);
+  border-top-right-radius: map.get($border-radii, lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: map.get($spacers, 2);
+  border-bottom: 1px solid var(--bs-border-color) !important; // Stronger border, use border-color
+  background-color: var(--bs-card-header-bg, var(--bs-secondary-bg)) !important; // Theme-aware header background
+  color: var(--bs-body-color) !important; // Ensure text is visible
+  min-height: 3.75rem;
+
+  // All text elements in header
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6,
+  p, span, div, label {
+    color: var(--bs-body-color) !important;
+  }
+
+  // Headings should be more prominent
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: map.get($font-weights, semibold);
+    margin: 0;
+  }
+}
+
+.customCardBody {
+  padding: map.get($spacers, 3) map.get($spacers, 4);
+  position: relative;
+}
+
+.createButton {
+  background-color: var(--bs-primary);
+  color: #fff;
+  border: none;
+  border-radius: map.get($border-radii, md);
+  padding: 0.5rem 1rem;
+  font-weight: map.get($font-weights, medium);
+  font-size: map.get($font-sizes, sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--bs-primary) 90%,
+      white
+    );
+  }
+}

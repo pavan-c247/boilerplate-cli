@@ -1,0 +1,1000 @@
+@use "sass:map";
+@use "@/assets/scss/variables.scss" as *;
+@use "@/assets/scss/mixins.scss" as *;
+
+.builderContainer {
+  min-height: 100vh;
+  background: white;
+  border-radius: map.get($border-radii, lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.toolbar {
+  @include flex-between;
+  background: white;
+  padding: 1rem 0.5rem;
+  position: sticky;
+  top: 0;
+
+  .toolbarLeft {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    h1 {
+      font-size: map.get($font-sizes, xl);
+      font-weight: map.get($font-weights, semibold);
+      color: #374151;
+      margin: 0;
+    }
+  }
+
+  .toolbarRight {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+.previewButton {
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+  text-decoration: none;
+  font-weight: map.get($font-weights, medium);
+
+  &:hover {
+    background: $light-grey;
+    border-color: $dark-border-color;
+    color: #374151;
+    text-decoration: none;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+  }
+}
+
+.contentWrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: $light-grey;
+}
+
+.formBuilder {
+  background: transparent;
+}
+
+.formHeader {
+  background: white;
+  border-left: 4px solid map.get($theme-colors, primary);
+  border-top: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: map.get($border-radii, lg);
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  .formSelectorGroup {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #374151;
+      font-size: map.get($font-sizes, sm);
+    }
+  }
+
+  .formSelector {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    font-size: map.get($font-sizes, md);
+    color: #374151;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: map.get($border-radii, md);
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: $dark-border-color;
+      box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.1);
+      outline: none;
+    }
+
+    &:hover {
+      border-color: $dark-border-color;
+    }
+  }
+
+  .formTitleInput {
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.75rem 0;
+    font-size: map.get($font-sizes, "2xl");
+    font-weight: map.get($font-weights, semibold);
+    color: #374151;
+    background: transparent;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-bottom-color: $dark-border-color;
+      box-shadow: none;
+      outline: none;
+    }
+
+    &::placeholder {
+      color: $dark-border-color;
+      font-weight: map.get($font-weights, normal);
+    }
+  }
+
+  .formDescriptionInput {
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.5rem 0;
+    font-size: map.get($font-sizes, md);
+    color: #6b7280;
+    background: transparent;
+    resize: none;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-bottom-color: $dark-border-color;
+      box-shadow: none;
+      outline: none;
+    }
+
+    &::placeholder {
+      color: $dark-border-color;
+    }
+  }
+}
+
+.fieldsContainer {
+  padding: 0;
+  background: $light-grey;
+}
+
+.fieldCard {
+  position: relative;
+  background: white;
+  border-left: 4px solid map.get($theme-colors, primary);
+  border-top: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: map.get($border-radii, lg);
+  margin: 0 0 1.25rem 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: visible;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left-color: #9570bc;
+
+    .dragHandle {
+      opacity: 1;
+    }
+  }
+
+  &.editing {
+    border-left-color: #b090d0;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  &.dragOver {
+    border-left-color: #1d4ed8;
+    background: #fafafa;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  }
+}
+
+.dragHandle {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.5rem;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: map.get($border-radii, md);
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:hover {
+    background: #fafafa;
+    border-color: #d1d5db;
+  }
+}
+
+.dragDots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2px;
+  width: 10px;
+  height: 14px;
+
+  span {
+    width: 2.5px;
+    height: 2.5px;
+    background: $dark-border-color;
+    border-radius: 50%;
+    display: block;
+    transition: background 0.2s ease;
+  }
+}
+
+.dragHandle:hover .dragDots span {
+  background: #6b7280;
+}
+
+.fieldCard:hover .dragHandle,
+.fieldCard.dragging .dragHandle {
+  opacity: 1;
+}
+
+.fieldContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.addFieldButtonWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.25rem 0;
+  margin: 0.5rem 0;
+  position: relative;
+  background: $light-grey;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: #e0e0e0;
+  }
+
+  &::before {
+    left: 0;
+  }
+
+  &::after {
+    right: 0;
+  }
+}
+
+.addFieldButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 50%;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    border-color: map.get($theme-colors, primary);
+    color: map.get($theme-colors, primary);
+    background: #fafafa;
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+
+  svg {
+    font-size: 1.25rem;
+  }
+}
+
+// Field Editor Styles
+.fieldEditor {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.fieldHeaderRow {
+  padding: 1.25rem 1.5rem 1rem 1.5rem;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.fieldHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.fieldNumberBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: map.get($theme-colors, primary);
+  color: white;
+  border-radius: 50%;
+  font-size: map.get($font-sizes, md);
+  font-weight: map.get($font-weights, bold);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.fieldTypeSelector {
+  flex: 0 0 auto;
+  min-width: 300px;
+
+  .typeSelect {
+    border: 1px solid #d1d5db;
+    border-radius: map.get($border-radii, md);
+    padding: 0.5rem 0.875rem;
+    font-size: map.get($font-sizes, sm);
+    font-weight: map.get($font-weights, medium);
+    color: #374151;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $dark-border-color;
+    }
+
+    &:focus {
+      border-color: $dark-border-color;
+      box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+      outline: none;
+    }
+  }
+}
+
+.fieldActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $light-grey;
+    border-color: #d1d5db;
+    color: #374151;
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+  }
+
+  svg {
+    font-size: 0.75rem;
+  }
+
+  &.deleteAction {
+    background: #fef2f2;
+    border-color: #fee2e2;
+    color: #ef4444;
+
+    &:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #dc2626;
+      transform: scale(1.05);
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    }
+  }
+}
+
+.fieldDisplay {
+  padding: 1.5rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex: 1;
+  background: white;
+
+  &:hover {
+    background-color: #fafafa;
+  }
+}
+
+.fieldQuestion {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .questionContent {
+    flex: 1;
+    font-size: map.get($font-sizes, md);
+    color: #374151;
+    font-weight: map.get($font-weights, semibold);
+    line-height: 1.5;
+
+    .placeholder {
+      color: $dark-border-color;
+      font-style: italic;
+      font-weight: map.get($font-weights, normal);
+    }
+  }
+
+  .requiredBadge {
+    color: #dc2626;
+    font-weight: map.get($font-weights, bold);
+    margin-left: 0.25rem;
+    font-size: map.get($font-sizes, md);
+  }
+}
+
+.fieldPreview {
+  margin-left: 0;
+  opacity: 0.9;
+
+  input,
+  textarea {
+    pointer-events: none;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: map.get($border-radii, md);
+
+    &:focus {
+      border-color: $dark-border-color;
+      box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+      outline: none;
+    }
+
+    &::placeholder {
+      color: $dark-border-color;
+    }
+  }
+}
+
+.selectPreview {
+  padding: 0.5rem 0;
+
+  select {
+    pointer-events: none;
+    opacity: 0.75;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: map.get($border-radii, md);
+
+    &:focus {
+      border-color: $dark-border-color;
+      box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+      outline: none;
+    }
+  }
+}
+
+.fieldEditorPanel {
+  border-top: 1px solid #e0e0e0;
+  background: #fafafa;
+  padding: 1.5rem 1.5rem;
+}
+
+.editorHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+
+  .fieldTypeLabel {
+    font-size: map.get($font-sizes, xs);
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: map.get($font-weights, semibold);
+  }
+
+  .collapseButton {
+    background: white;
+    border: 1px solid #d1d5db;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: map.get($border-radii, sm);
+    transition: all 0.2s ease;
+    width: 32px;
+    height: 32px;
+
+    &:hover {
+      background: $light-grey;
+      border-color: $dark-border-color;
+      color: #374151;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+    }
+  }
+}
+
+.editorContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .form-control {
+    border: 1px solid #d1d5db;
+    border-radius: map.get($border-radii, md);
+    padding: 0.625rem 0.875rem;
+    transition: all 0.2s ease;
+    background: white;
+    font-size: map.get($font-sizes, sm);
+
+    &:focus {
+      border-color: $dark-border-color;
+      box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+      background: white;
+      outline: none;
+    }
+  }
+
+  .form-label {
+    font-weight: map.get($font-weights, semibold);
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: map.get($font-sizes, sm);
+  }
+}
+
+.fieldOptions {
+  display: flex;
+  gap: 2rem;
+  padding-top: 0.5rem;
+}
+
+.toggleOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 0;
+  contain: layout;
+  overflow-anchor: none;
+  will-change: contents;
+}
+
+.optionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0;
+  min-height: auto;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  contain: layout style paint;
+  opacity: 1;
+  transform: translateX(0);
+
+  &.removing {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+  }
+}
+
+.removeButtonWrapper {
+  min-width: 38px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+
+  :global(button:hover:not(:disabled)) {
+    background-color: var(--bs-danger, #dc3545);
+    border-color: var(--bs-danger, #dc3545);
+
+    svg {
+      color: white !important;
+    }
+  }
+}
+
+.optionItemWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  min-height: 38px;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.removeOptionButtonWrapper {
+  min-width: 38px;
+  height: 38px;
+}
+
+.removeOptionButton {
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  color: #515152e0;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    color: #dc2626;
+  }
+
+  svg {
+    font-size: 0.875rem;
+  }
+}
+
+.addOptionButton {
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+
+  &:hover {
+    background: #e5e7eb;
+    border-color: $dark-border-color;
+    color: #374151;
+  }
+
+  svg {
+    font-size: 0.875rem;
+  }
+}
+
+.toggleLabel {
+  font-size: map.get($font-sizes, md);
+  font-weight: map.get($font-weights, medium);
+  color: #374151;
+  margin: 0;
+  cursor: pointer;
+}
+
+.toggleSwitch {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  outline: none;
+  flex-shrink: 0;
+
+  &:focus {
+    outline: 2px solid map.get($theme-colors, primary);
+    outline-offset: 2px;
+  }
+
+  .toggleSlider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  &.toggleOn {
+    background-color: #10b981;
+
+    .toggleSlider {
+      transform: translateX(24px);
+    }
+
+    &:hover {
+      background-color: #059669;
+    }
+  }
+
+  &.toggleOff {
+    background-color: #d1d5db;
+
+    .toggleSlider {
+      transform: translateX(0);
+    }
+
+    &:hover {
+      background-color: $dark-border-color;
+    }
+  }
+}
+
+// Preview Modal Styles
+.previewOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.previewModal {
+  background: white;
+  border-radius: map.get($border-radii, xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 900px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+  border: none;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.previewHeader {
+  background: rgba(228, 227, 227, 0.712);
+  color: #6b7280;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  h3 {
+    font-size: map.get($font-sizes, xl);
+    font-weight: map.get($font-weights, bold);
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #555557;
+  }
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(228, 227, 227, 0.712);
+  color: #54565a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+
+  &:hover {
+    background: #cececfc7;
+    color: #374151;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2);
+  }
+
+  svg {
+    font-size: 0.875rem;
+  }
+}
+
+.previewBody {
+  padding: 2.5rem;
+  background: #ffffff;
+  overflow-y: auto;
+  flex: 1;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $light-grey;
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 5px;
+
+    &:hover {
+      background: $dark-border-color;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 1rem;
+  }
+
+  .toolbar {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .toolbarRight {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+
+  .formHeader {
+    padding: 1.5rem 1rem;
+  }
+
+  .fieldCard {
+    flex-direction: column;
+  }
+
+  .dragHandle {
+    position: static;
+    transform: none;
+    padding: 0.75rem;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+
+    .dragDots {
+      transform: rotate(90deg);
+    }
+  }
+
+  .previewModal {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+.container {
+  position: relative;
+}
+
+.codeBlock {
+  background-color: $light-grey;
+  padding: 1rem;
+  border-radius: map.get($border-radii, md);
+  overflow: auto;
+  max-height: 60vh;
+  font-size: map.get($font-sizes, sm);
+  line-height: 1.5;
+  margin: 0;
+  font-family: monospace;
+
+  code {
+    display: block;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-x: auto;
+  }
+}
+
+.copyButtonWrapper {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.description {
+  margin-top: 1rem;
+  font-size: map.get($font-sizes, sm);
+  color: #6c757d;
+}
+
+.footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.view-code-fallback-textarea {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+}

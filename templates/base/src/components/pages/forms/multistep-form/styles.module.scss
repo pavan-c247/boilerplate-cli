@@ -1,0 +1,62 @@
+@use "sass:map";
+@use "@/assets/scss/variables.scss" as *;
+
+.multistepFormContainer {
+  padding: map.get($spacers, 4);
+}
+
+.formHeader {
+  margin-bottom: map.get($spacers, 5);
+
+  .formTitle {
+    color: var(--bs-body-color);
+    margin-bottom: map.get($spacers, 2);
+    font-weight: map.get($font-weights, semibold);
+    font-size: map.get($font-sizes, xl);
+  }
+
+  .formDescription {
+    font-size: map.get($font-sizes, sm);
+    color: var(--bs-text-muted, var(--bs-secondary-color));
+    margin-bottom: 0;
+  }
+}
+
+.formCard {
+  padding: map.get($spacers, 6) !important;
+  border: 1px solid var(--bs-border-color) !important;
+  background-color: var(--bs-body-bg) !important;
+}
+
+.stepCard {
+  border: 1px solid var(--bs-border-color) !important;
+  background-color: var(--bs-body-bg) !important;
+  margin-bottom: map.get($spacers, 3);
+  padding: map.get($spacers, 4);
+  border-radius: map.get($border-radii, lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.stepCardHeader {
+  border-bottom: 1px solid var(--bs-border-color) !important;
+  padding-bottom: map.get($spacers, 3) !important;
+  margin-bottom: map.get($spacers, 3);
+
+  .stepCardTitle {
+    color: var(--bs-body-color) !important;
+    margin-bottom: map.get($spacers, 2);
+    font-weight: map.get($font-weights, semibold);
+    font-size: map.get($font-sizes, lg);
+  }
+
+  .stepCardDescription {
+    color: var(--bs-text-muted, var(--bs-secondary-color)) !important;
+    margin-bottom: 0;
+    font-size: map.get($font-sizes, sm);
+  }
+}
+
+.stepCardBody {
+  padding-top: map.get($spacers, 2);
+}

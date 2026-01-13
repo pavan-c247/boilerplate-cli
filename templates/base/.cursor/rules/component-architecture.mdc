@@ -1,0 +1,340 @@
+# Component Architecture Guidelines
+
+## Component Organization
+
+### Directory Structure
+- **Pure Components** (`src/components/pure-components/`): Reusable, generic UI components
+  - Each component in its own folder: `ComponentName/ComponentName.tsx`, `ComponentName/styles.module.scss`, `ComponentName/index.tsx`
+  - Examples: Button, Input, Table, Modal, Card, Toast, Tabs, etc.
+- **Common Components** (`src/components/common/`): Shared layout and feature components
+  - `header/`: Top navigation header
+  - `sidebar/`: Main navigation sidebar
+  - `layout/`: Dashboard layout wrapper
+  - `filter/`: Filter components
+  - `search/`: Search components
+  - `toast/`: Toast notifications
+- **Page Components** (`src/components/pages/`): Page-specific components
+  - Organized by feature: `users/`, `cms/`, `faq/`, `documents/`, `dashboard/`
+- **Auth Components** (`src/components/auth/`): Authentication-specific components
+- **Web Components** (`src/components/web/`): Public web components
+
+## Component Structure Pattern
+
+Each component should follow this structure:
+
+1. **Imports**: 
+   - React and Next.js imports
+   - Third-party libraries (react-bootstrap, etc.)
+   - Internal components (using `@/` aliases)
+   - Types/interfaces
+   - Styles (SCSS modules)
+
+2. **Types/Interfaces**: Props interface definition (exported)
+
+3. **Component**: Main component function using `React.FC<ComponentNameProps>`
+
+4. **Helper functions**: Variant/size handlers, utility functions
+
+5. **Export**: Default export
+
+### Example Component Structure
+```typescript
+import React from 'react';
+import { Button as BootstrapButton } from 'react-bootstrap';
+import styles from './styles.module.scss';
+
+export interface ButtonProps {
+  type?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'link';
+  size?: 'small' | 'medium' | 'large';
+  loading?: boolean;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+  onClick?: () => void;
+  children?: React.ReactNode;
+  className?: string;
+  href?: string;
+  target?: string;
+  block?: boolean;
+  active?: boolean;
+}
+
+const Button: React.FC<ButtonProps> = ({
+  type = 'primary',
+  size = 'medium',
+  loading = false,
+  disabled = false,
+  icon,
+  onClick,
+  children,
+  className = '',
+  href,
+  target,
+  block = false,
+  active = false,
+}) => {
+  const getVariant = () => {
+    switch (type) {
+      case 'primary':
+        return 'primary';
+      case 'secondary':
+        return 'secondary';
+      // ... other cases
+      default:
+        return 'primary';
+    }
+  };
+
+  const buttonClasses = [
+    styles.button,
+    type === 'icon' ? styles.iconButton : '',
+    block ? styles.block : '',
+    className
+  ].filter(Boolean).join(' ');
+
+  return (
+    <BootstrapButton
+      variant={getVariant()}
+      size={getSize()}
+      disabled={disabled || loading}
+      onClick={onClick}
+      className={buttonClasses}
+      href={href}
+      target={target}
+      active={active}
+    >
+      {loading && (
+        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+      )}
+      {icon && <span className={styles.icon}>{icon}</span>}
+      {children}
+    </BootstrapButton>
+  );
+};
+
+export default Button;
+```
+
+## Component File Organization
+
+For each component, create:
+- `ComponentName.tsx`: Main component file
+- `styles.module.scss`: Component styles
+- `ComponentName.stories.tsx`: Storybook stories (for pure components)
+- `index.tsx`: Re-export the component (optional, for cleaner imports)
+
+## Props Interface Pattern
+
+```typescript
+export interface ComponentNameProps {
+  // Required props (no default value)
+  title: string;
+  
+  // Optional props with defaults (provide default in component)
+  variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'small' | 'medium' | 'large';
+  
+  // Event handlers
+  onClick?: (event: React.MouseEvent) => void;
+  onChange?: (value: string) => void;
+  onSubmit?: (data: FormData) => void;
+  
+  // Styling
+  className?: string;
+  style?: React.CSSProperties;
+  
+  // Content
+  children?: React.ReactNode;
+  
+  // State
+  loading?: boolean;
+  disabled?: boolean;
+  
+  // Data
+  data?: SomeType[];
+}
+```
+
+## Component Categories
+
+### Pure Components (`src/components/pure-components/`)
+- **Button**: Multiple variants (primary, secondary, tertiary, danger, link, icon)
+- **Form Elements**: Input, TextArea, Password, Search, Select, Checkbox
+- **Data Display**: Table, Typography, Card, CardWrapper
+- **Feedback**: Toast, Modal, LoadingSpinner, Alert
+- **Navigation**: Breadcrumb, Menu, Tabs, Link
+- **Layout**: Space, Divider, Collapse, Drawer
+- **Rich Text**: TipTapEditor, EditorJS
+- **Other**: FileUpload, AutoComplete, ImageWithFallback, Tooltip, Icons
+
+### Common Components (`src/components/common/`)
+- **Layout**: DashboardLayout, Header, Sidebar
+- **Filter**: FilterBar, DateFilter, SelectFilter, FilterRenderers
+- **Search**: SearchInput
+- **Toast**: Toast notifications
+
+### Page Components (`src/components/pages/`)
+- **Users**: UsersPage, UserForm
+- **CMS**: CmsListPage, CmsForm, AddCmsPage, EditCmsPage
+- **FAQ**: Faq component, Policy/Terms
+- **Documents**: DocumentsPage, DocumentUploadModal
+- **Dashboard**: Dashboard components
+- **Bulk Import**: BulkImportUsersPage, BulkImportFaqPage
+
+### Authentication Components (`src/components/auth/`)
+- **Login**: Login form
+- **Signup**: Signup form
+- **Forgot Password**: Password reset request
+- **Reset Password**: Password reset form
+- **AuthGate**: Authentication guard component
+
+## Styling Guidelines
+
+- **SCSS Modules**: Use `.module.scss` for component styles
+- **Class naming**: Use camelCase for class names (e.g., `button`, `iconButton`, `block`)
+- **Global SCSS**: Use `@use` to import global variables and mixins
+  ```scss
+  @use "./global.scss" as *;
+  @use "@/assets/scss/variables" as *;
+  ```
+- **Bootstrap integration**: Leverage Bootstrap classes and variables
+- **Theme-aware colors**: **CRITICAL - Always use Bootstrap CSS variables** for theme-aware colors
+  ```scss
+  // ✅ Good - Theme-aware (auto-switches with theme)
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+  background-color: var(--bs-primary);
+  
+  // ❌ Bad - NOT theme-aware (won't switch with theme)
+  background-color: $body-bg;
+  color: $body-color;
+  background-color: map-get($theme-colors, light);
+  ```
+- **Static values**: Use SCSS variables for spacing, typography, border-radius, etc.
+  ```scss
+  padding: map-get($spacers, 2);
+  font-size: map-get($font-sizes, md);
+  border-radius: map-get($border-radii, md);
+  ```
+- **RGB variables for transparency**: Use RGB variables for transparent backgrounds
+  ```scss
+  background-color: rgba(var(--bs-primary-rgb, 0, 0, 0), 0.15);
+  ```
+- **Responsive Design**: Mobile-first approach using Bootstrap breakpoints
+- **Accessibility**: Include proper ARIA attributes and focus states
+- **Theme testing**: **Always test components in both light and dark themes**
+
+**See [theme-system.mdc](mdc:.cursor/rules/theme-system.mdc) for complete theme system documentation.**
+
+## React Patterns
+
+- **Use `React.FC<Props>`**: For component type definition
+- **Default props**: Provide defaults in function parameters, not in interface
+- **Forward refs**: Use `React.forwardRef` for form inputs and components that need refs
+- **Conditional rendering**: Use `&&` for simple conditions, ternary for alternatives
+- **Event handlers**: Define inline or extract to named functions for complex logic
+
+## Toast Notifications
+
+**ALWAYS use the standard toast pattern** with `ToastContainer` and `Toast` from `react-bootstrap`. Do NOT use the `CommonToast` component wrapper.
+
+### Standard Toast Pattern
+
+```typescript
+import { Toast, ToastContainer } from 'react-bootstrap';
+import { useState } from 'react';
+
+const MyComponent: React.FC = () => {
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    variant: 'success' | 'danger';
+  }>({ show: false, message: '', variant: 'success' });
+
+  const handleSubmit = async () => {
+    try {
+      await someMutation();
+      setToast({
+        show: true,
+        message: t('messages.saveSuccess'),
+        variant: 'success',
+      });
+    } catch (error: any) {
+      setToast({
+        show: true,
+        message: error.message || t('messages.saveError'),
+        variant: 'danger',
+      });
+    }
+  };
+
+  return (
+    <>
+      {/* Component content */}
+      
+      <ToastContainer
+        position="top-end"
+        className="p-3"
+        style={{ zIndex: 9999 }}
+      >
+        <Toast
+          bg={toast.variant}
+          onClose={() => setToast({ ...toast, show: false })}
+          show={toast.show}
+          delay={3000}
+          autohide
+        >
+          <Toast.Body
+            style={{ color: toast.variant === "danger" ? "#fff" : undefined }}
+          >
+            {toast.message}
+          </Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </>
+  );
+};
+```
+
+### Key Points:
+- ✅ Use `ToastContainer` and `Toast` from `react-bootstrap`
+- ✅ Position: `"top-end"` (top-right corner)
+- ✅ Auto-hide: `delay={3000}` and `autohide` prop
+- ✅ Variants: `'success'` or `'danger'`
+- ✅ White text for danger variant: `style={{ color: toast.variant === "danger" ? "#fff" : undefined }}`
+- ✅ State management: Use `useState` with `{ show, message, variant }` structure
+- ❌ Do NOT use `CommonToast` component wrapper
+- ❌ Do NOT use custom toast components
+
+### Toast State Type
+
+Always use this type for toast state:
+
+```typescript
+const [toast, setToast] = useState<{
+  show: boolean;
+  message: string;
+  variant: 'success' | 'danger';
+}>({ show: false, message: '', variant: 'success' });
+```
+
+## Accessibility Requirements
+
+- **Semantic HTML**: Use proper HTML elements (`<button>`, `<nav>`, `<main>`, etc.)
+- **ARIA attributes**: Add appropriate aria-* attributes (`aria-label`, `aria-describedby`, etc.)
+- **Keyboard navigation**: Ensure tab order and keyboard shortcuts work
+- **Screen readers**: Provide proper labels and descriptions
+- **Color contrast**: Meet WCAG AA guidelines (4.5:1 for normal text)
+- **Focus indicators**: Clear focus states for keyboard navigation
+- **Loading states**: Use `aria-busy` and `role="status"` for loading indicators
+
+## Component Testing
+
+- **Storybook**: Create stories for all pure components
+- **Stories location**: `ComponentName.stories.tsx` in the same folder
+- **Story structure**: Default, variants, states (disabled, loading, etc.)
+- **Accessibility testing**: Use Storybook a11y addon
+description:
+globs:
+alwaysApply: false
+---

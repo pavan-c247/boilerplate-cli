@@ -1,0 +1,14 @@
+{
+  "messages": {
+    "noTokenFound": "No verification token found in the URL.",
+    "processing": "Please wait while we verify your email address...",
+    "verifying": "Verifying Email",
+    "success": {
+      "emailVerify": "Email verified successfully! Redirecting to login...",
+      "verified": "Email Verified!"
+    },
+    "errors": {
+      "failedEmailVerification": "Failed to verify email. Please try again."
+    }
+  }
+}

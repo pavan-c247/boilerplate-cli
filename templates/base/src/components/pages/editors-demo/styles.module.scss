@@ -1,0 +1,350 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: #6b7280;
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.toggleButton {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+}
+
+.content {
+  margin-bottom: 3rem;
+}
+
+.editorsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editorSection {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.editorHeader {
+  margin-bottom: 1.5rem;
+  
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.features {
+  margin-bottom: 1.5rem;
+  
+  p {
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+    font-size: 0.875rem;
+    
+    code {
+      background: #f3f4f6;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+    }
+  }
+}
+
+.editorWrapper {
+  margin-bottom: 1.5rem;
+  min-height: 300px;
+}
+
+.loadingEditor {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.shortcuts {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  
+  h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.shortcutGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  
+  code {
+    background: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  
+  span {
+    color: #6b7280;
+  }
+}
+
+.previewGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.previewSection {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+}
+
+.jsonPreview,
+.htmlPreview {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.debugInfo {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+}
+
+.debugGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+  
+  strong {
+    color: #111827;
+    font-weight: 600;
+  }
+}
+
+.instructions {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+  
+  ol {
+    margin: 0;
+    padding-left: 1.5rem;
+    
+    li {
+      margin-bottom: 1rem;
+      color: #4b5563;
+      line-height: 1.6;
+      
+      strong {
+        color: #111827;
+        font-weight: 600;
+      }
+      
+      code {
+        background: #f3f4f6;
+        padding: 0.125rem 0.375rem;
+        border-radius: 4px;
+        font-size: 0.875em;
+        font-family: monospace;
+      }
+      
+      ul {
+        margin-top: 0.5rem;
+        padding-left: 1.5rem;
+        
+        li {
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #0f172a;
+    color: #f1f5f9;
+  }
+
+  .title {
+    color: #f1f5f9;
+  }
+
+  .subtitle {
+    color: #94a3b8;
+  }
+
+  .editorSection {
+    background-color: #1e293b;
+    border-color: #334155;
+  }
+
+  .editorHeader h2 {
+    color: #f1f5f9;
+  }
+
+  .badge {
+    background: #334155;
+    color: #f1f5f9;
+  }
+
+  .features p {
+    color: #94a3b8;
+  }
+
+  .previewSection {
+    background: #1e293b;
+    border-color: #334155;
+    
+    h3 {
+      color: #f1f5f9;
+    }
+  }
+
+  .debugInfo {
+    background: #1e293b;
+    border-color: #334155;
+    
+    h3 {
+      color: #f1f5f9;
+    }
+  }
+
+  .debugGrid {
+    color: #94a3b8;
+    
+    strong {
+      color: #f1f5f9;
+    }
+  }
+
+  .instructions {
+    background: #1e293b;
+    border-color: #334155;
+    
+    h3 {
+      color: #f1f5f9;
+    }
+    
+    ol li {
+      color: #94a3b8;
+      
+      strong {
+        color: #f1f5f9;
+      }
+    }
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "multistepForm": {
+    "title": "Multistep Form Example",
+    "description": "Complete example of a multistep form with validation and progress tracking",
+    "steps": {
+      "personal": {
+        "title": "Personal Information",
+        "description": "Enter your personal details",
+        "fields": {
+          "firstName": {
+            "label": "First Name",
+            "placeholder": "Enter your first name"
+          },
+          "lastName": {
+            "label": "Last Name",
+            "placeholder": "Enter your last name"
+          },
+          "email": {
+            "label": "Email Address",
+            "placeholder": "Enter your email"
+          },
+          "phone": {
+            "label": "Phone Number",
+            "placeholder": "Enter your phone number",
+            "helpText": "Optional: Include country code"
+          }
+        }
+      },
+      "address": {
+        "title": "Address Information",
+        "description": "Please provide your address details",
+        "fields": {
+          "address": {
+            "label": "Street Address",
+            "placeholder": "Enter your street address"
+          },
+          "city": {
+            "label": "City",
+            "placeholder": "Enter your city"
+          },
+          "state": {
+            "label": "State/Province",
+            "placeholder": "Enter your state or province"
+          },
+          "zipCode": {
+            "label": "Zip/Postal Code",
+            "placeholder": "Enter your zip code"
+          },
+          "country": {
+            "label": "Country",
+            "placeholder": "Select your country"
+          }
+        }
+      },
+      "additional": {
+        "title": "Additional Information",
+        "description": "Tell us more about yourself",
+        "fields": {
+          "dateOfBirth": {
+            "label": "Date of Birth"
+          },
+          "bio": {
+            "label": "Bio",
+            "placeholder": "Tell us about yourself (optional)",
+            "helpText": "Maximum 500 characters"
+          }
+        }
+      },
+      "terms": {
+        "title": "Terms & Conditions",
+        "description": "Please review and accept the terms",
+        "fields": {
+          "agreeToTerms": {
+            "label": "I agree to the Terms and Conditions",
+            "helpText": "You must agree to the terms to continue"
+          },
+          "agreeToPrivacy": {
+            "label": "I agree to the Privacy Policy",
+            "helpText": "You must agree to the privacy policy to continue"
+          }
+        }
+      }
+    },
+    "navigation": {
+      "next": "Continue",
+      "prev": "Back",
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    },
+    "messages": {
+      "submitSuccess": "Form submitted successfully!"
+    }
+  },
+  "simpleForm": {
+    "title": "Simple Form Example",
+    "description": "Example using Text, Password, Search, TextArea, Date/Time, File Upload fields, CheckboxField, CheckboxGroupField, and RadioGroupField",
+    "sections": {
+      "personalInformation": {
+        "title": "Personal Information"
+      },
+      "debugValues": {
+        "title": "Form Values (Debug)"
+      }
+    },
+    "fields": {
+      "name": {
+        "label": "Full Name",
+        "placeholder": "Enter your full name"
+      },
+      "password": {
+        "label": "Password"
+      },
+      "search": {
+        "label": "Search Keyword"
+      },
+      "bio": {
+        "label": "Short Bio"
+      },
+      "dob": {
+        "label": "Date of Birth"
+      },
+      "event_datetime": {
+        "label": "Event Date & Time"
+      },
+      "preferred_time_am_pm": {
+        "label": "Office Time"
+      },
+      "profile_image": {
+        "label": "Profile Image",
+        "helpText": "Upload a profile image (max 5MB)"
+      },
+      "documents": {
+        "label": "Documents",
+        "helpText": "Upload up to 5 documents (max 10MB each)"
+      },
+      "gender": {
+        "label": "Gender",
+        "helpText": "Please select your gender"
+      },
+      "interests": {
+        "label": "Interests",
+        "helpText": "Select all that apply"
+      },
+      "country": {
+        "label": "Country",
+        "placeholder": "Select your country",
+        "helpText": "Select your country of residence"
+      },
+      "languages": {
+        "label": "Languages",
+        "placeholder": "Select languages you speak",
+        "helpText": "Select all languages you speak (hold Ctrl/Cmd to select multiple)"
+      },
+      "agreeToTerms": {
+        "label": "I agree to the terms and conditions",
+        "helpText": "You must agree to proceed"
+      }
+    },
+    "buttons": {
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "reset": "Reset"
+    },
+    "messages": {
+      "formHasErrors": "Form has errors:",
+      "invalidField": "Invalid field"
+    }
+  }
+}

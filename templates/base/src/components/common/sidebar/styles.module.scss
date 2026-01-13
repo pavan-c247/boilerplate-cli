@@ -1,0 +1,300 @@
+@use "sass:map";
+@use "@/assets/scss/variables" as *;
+
+/* =====================================================
+   Local layout variables
+===================================================== */
+$sidebar-width: 190px;
+$sidebar-collapsed-width: 80px;
+$mobile-breakpoint: 768px;
+$transition-duration: 0.3s;
+
+/* =====================================================
+   Sidebar
+===================================================== */
+.sidebar {
+  position: fixed;
+  width: $sidebar-width;
+  height: 100vh;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-right: 1px solid var(--bs-border-color);
+  display: flex;
+  flex-direction: column;
+  padding: map.get($spacers, 6) map.get($spacers, 1);
+  transition: width $transition-duration ease, box-shadow 0.2s ease;
+  z-index: 11;
+  overflow-y: auto;
+
+  /* Scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--bs-body-color-rgb), 0.3);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--bs-body-color-rgb), 0.5);
+  }
+
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+
+    .navItem {
+      justify-content: center;
+    }
+  }
+
+  &.hoverExpanded {
+    width: $sidebar-width;
+
+    .navItem {
+      justify-content: flex-start;
+    }
+  }
+}
+
+/* Hide labels when collapsed */
+.sidebar.collapsed:not(.hoverExpanded) {
+  .navItem span:not(.icon),
+  .logo span {
+    display: none;
+  }
+}
+
+/* =====================================================
+   Hover Menu
+===================================================== */
+.hoverMenu {
+  position: fixed;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-radius: map.get($border-radii, lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  padding: map.get($spacers, 3) map.get($spacers, 4);
+  min-width: 200px;
+  opacity: 0;
+  animation: slideIn 0.25s ease forwards;
+  z-index: 9999;
+
+  .navItem {
+    display: flex;
+    align-items: center;
+    border-radius: map.get($border-radii, md);
+    white-space: nowrap;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    margin-bottom: map.get($spacers, 1);
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: var(--bs-secondary-bg);
+    }
+
+    &.active {
+      background-color: var(--bs-primary);
+      color: var(--bs-white);
+    }
+
+    .icon {
+      margin-right: map.get($spacers, 2);
+    }
+  }
+}
+
+.hoverMenuArrow {
+  position: absolute;
+  left: -10px;
+  top: 20px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid var(--bs-primary);
+}
+
+/* =====================================================
+   Logo
+===================================================== */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacers, 3);
+  padding: map.get($spacers, 2);
+
+  h1 {
+    font-size: map.get($font-sizes, xl);
+    font-weight: map.get($font-weights, semibold);
+    color: var(--bs-body-color);
+    white-space: nowrap;
+  }
+
+  span {
+    font-size: map.get($font-sizes, md);
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+  }
+}
+
+/* =====================================================
+   Toggle Button
+===================================================== */
+.toggleButton {
+  position: absolute;
+  top: map.get($spacers, 4);
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--bs-body-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+  }
+
+  @media (max-width: $mobile-breakpoint) {
+    display: none;
+  }
+}
+
+/* =====================================================
+   Navigation
+===================================================== */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: map.get($spacers, 1);
+  flex: 1;
+  margin: map.get($spacers, 3) map.get($spacers, 1);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacers, 2);
+  padding: map.get($spacers, 2);
+  font-size: map.get($font-sizes, sm);
+  border-radius: map.get($border-radii, md);
+  font-weight: map.get($font-weights, normal);
+  color: var(--bs-body-color);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  white-space: wrap;
+
+  &:hover {
+    background-color: var(--bs-secondary-bg);
+  }
+
+  &.active {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+  }
+}
+
+.icon {
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  font-size: map.get($font-sizes, sm);
+  font-weight: map.get($font-weights, medium);
+}
+
+/* =====================================================
+   Mobile
+===================================================== */
+.mobileMenuButton {
+  position: fixed;
+  top: map.get($spacers, 3);
+  left: map.get($spacers, 3);
+  background: none;
+  border: none;
+  color: var(--bs-body-color);
+  cursor: pointer;
+  padding: map.get($spacers, 2);
+  display: none;
+
+  @media (max-width: $mobile-breakpoint) {
+    display: block;
+  }
+}
+
+@media (max-width: $mobile-breakpoint) {
+  .sidebar.mobileOpen::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+}
+
+/* =====================================================
+   Accordion
+===================================================== */
+.accordionItem {
+  margin-bottom: map.get($spacers, 1);
+}
+
+.accordionHeader {
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+.chevron {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.accordionContent {
+  padding-left: map.get($spacers, 2);
+  margin-top: map.get($spacers, 1);
+}
+
+.subItem {
+  padding: map.get($spacers, 2) map.get($spacers, 3);
+  font-size: map.get($font-sizes, xs);
+
+  &:hover {
+    background-color: var(--bs-secondary-bg);
+  }
+
+  &.active {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+  }
+}
+
+/* =====================================================
+   Animations
+===================================================== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

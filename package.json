@@ -1,0 +1,23 @@
+{
+  "name": "frontend-theme",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "frontend-theme": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx cli/index.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.0.7",
+    "@types/prompts": "^2.4.9",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.3",
+    "prompts": "^2.4.2"
+  }
+}

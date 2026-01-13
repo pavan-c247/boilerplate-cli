@@ -1,0 +1,173 @@
+@use "sass:map";
+@use "@/assets/scss/variables.scss" as *;
+
+.form {
+  margin-bottom: map.get($spacers, 2);
+}
+
+.formGroup {
+  margin-bottom: map.get($spacers, 2);
+}
+
+.formLabel {
+  display: inline-block;
+  margin-bottom: map.get($spacers, 1);
+  font-weight: map.get($font-weights, medium);
+  color: var(--bs-body-color); // Theme-aware color
+}
+
+.formText {
+  margin-top: map.get($spacers, 0.5);
+  font-size: map.get($font-sizes, sm);
+  color: var(--bs-text-muted, var(--bs-secondary-color)); // Theme-aware muted color
+}
+
+.formControl {
+  display: block;
+  width: 100%;
+  padding: map.get($spacers, 1.5) map.get($spacers, 3);
+  font-size: map.get($font-sizes, md);
+  font-weight: map.get($font-weights, normal);
+  line-height: 1.5;
+  color: var(--bs-input-color); // Theme-aware input color
+  background-color: var(--bs-input-bg); // Theme-aware background
+  border: 1px solid var(--bs-input-border-color); // Theme-aware border
+  border-radius: map.get($border-radii, sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: var(--bs-text-muted, var(--bs-secondary-color)) !important;
+    opacity: 0.8 !important;
+  }
+
+  &:focus {
+    border-color: var(--bs-input-focus-border-color);
+    outline: none;
+    box-shadow: 0 0 0 0.125rem
+      rgba(var(--bs-input-focus-shadow-rgb, 96, 54, 149), 0.15);
+  }
+
+  &:disabled {
+    background-color: var(--bs-secondary-bg);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.formSelect {
+  @extend .formControl;
+  padding-right: map.get($spacers, 6);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right map.get($spacers, 3) center;
+  background-size: 16px 12px;
+}
+
+.formCheck {
+  display: block;
+  min-height: 1.5rem;
+  padding-left: map.get($spacers, 6);
+  margin-bottom: map.get($spacers, 0.5);
+}
+
+.formCheckInput {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.25rem;
+  margin-left: -1.5rem;
+  background-color: var(--bs-form-check-input-bg);
+  border: 1px solid var(--bs-form-check-input-border-color);
+  appearance: none;
+  cursor: pointer;
+
+  &:checked {
+    background-color: var(--bs-form-check-input-checked-bg);
+    border-color: var(--bs-form-check-input-checked-border-color);
+  }
+
+  &:focus {
+    border-color: var(--bs-form-check-input-focus-border);
+    box-shadow: 0 0 0 0.125rem
+      rgba(var(--bs-form-check-input-focus-shadow-rgb, 96, 54, 149), 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.formCheckLabel {
+  color: var(--bs-body-color); // Theme-aware color
+  cursor: pointer;
+  user-select: none;
+}
+
+.horizontal {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacers, 2);
+}
+
+.horizontalLabel {
+  margin-bottom: 0;
+  padding: map.get($spacers, 1.5) 0;
+}
+
+.horizontalControl {
+  flex: 1;
+}
+
+.invalid {
+  border-color: var(--bs-danger); // Theme-aware danger color
+  padding-right: map.get($spacers, 6);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5' stroke='%23dc3545' fill='none'/%3e%3cpath d='M6 3.5v3' stroke='%23dc3545'/%3e%3ccircle cx='6' cy='8.5' r='.6' fill='%23dc3545'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right map.get($spacers, 3) center;
+  background-size: 16px;
+}
+
+.valid {
+  border-color: var(--bs-success); // Theme-aware success color
+  padding-right: map.get($spacers, 6);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53l1.1-1.1 1.1 1.4 3.4-3.8 1.1 1.1z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right map.get($spacers, 3) center;
+  background-size: 16px;
+}
+
+.invalidFeedback,
+.validFeedback {
+  display: none;
+  width: 100%;
+  margin-top: map.get($spacers, 0.5);
+  font-size: map.get($font-sizes, sm);
+}
+
+.invalidFeedback {
+  color: var(--bs-danger); // Theme-aware danger color
+}
+
+.validFeedback {
+  color: var(--bs-success); // Theme-aware success color
+}
+
+.wasValidated {
+  .formControl {
+    &:invalid {
+      @extend .invalid;
+    }
+    &:valid {
+      @extend .valid;
+    }
+  }
+
+  .invalidFeedback {
+    display: block;
+  }
+
+  .validFeedback {
+    display: block;
+  }
+}

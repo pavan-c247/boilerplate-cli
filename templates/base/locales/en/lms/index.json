@@ -1,0 +1,20 @@
+{
+  "coursesTitle": "Courses",
+  "searchPlaceholder": "Search courses...",
+  "noCourses": "No courses found",
+  "visibility": {
+    "public": "Public",
+    "private": "Private",
+    "draft": "Draft"
+  },
+  "filters": {
+    "category": "Category",
+    "visibility": "Visibility",
+    "sortBy": "Sort By",
+    "orderBy": "Order"
+  },
+  "messages": {
+    "errorLoading": "Failed to load courses",
+    "noResults": "No courses match your search"
+  }
+}

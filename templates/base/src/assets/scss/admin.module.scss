@@ -1,0 +1,51 @@
+@use "@/assets/scss/variables.scss" as *;
+.customCardWrap {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+  margin-bottom: 24px;
+  word-wrap: break-word;
+  background-clip: border-box;
+  background-color: var(--bs-body-bg); // Theme-aware background
+  color: var(--bs-body-color); // Theme-aware text color
+  border: 1px solid var(--bs-border-color); // Theme-aware border
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.customCardHeader {
+  padding: 12px 16px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 2px solid var(--bs-border-color) !important; // Use theme-aware border-color
+  background-color: var(--bs-card-header-bg, var(--bs-secondary-bg)) !important; // Theme-aware header background
+  color: var(--bs-body-color) !important; // Ensure text is visible
+  min-height: 3.75rem;
+  // All text elements in header
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6,
+  p, span, div, label {
+    color: var(--bs-body-color) !important;
+  }
+
+  // Headings should be more prominent
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: 600; // semibold
+    margin: 0;
+  }
+}
+
+.customCardBody {
+  padding: 24px 30px;
+}
+.border {
+  border-color: var(--border);
+}
+

@@ -1,0 +1,406 @@
+@use "sass:map";
+@use "@/assets/scss/variables.scss" as *;
+
+/* =====================================================
+   Base Global Styles - Theme-Aware
+   ===================================================== */
+
+body {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: map.get($line-heights, normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: var(--bs-text-muted, var(--bs-secondary-color)) !important;
+  opacity: 0.8 !important;
+}
+
+.text-muted,
+.text-secondary {
+  color: var(--bs-text-muted, var(--bs-secondary-color)) !important;
+}
+
+// Form labels - ensure proper contrast
+label,
+.form-label {
+  color: var(--bs-body-color) !important;
+}
+
+// Small text and help text
+small,
+.text-small,
+.form-text {
+  color: var(--bs-text-muted, var(--bs-secondary-color)) !important;
+}
+
+// Bootstrap form control overrides for dark mode readability
+.form-control {
+  color: var(--bs-input-color) !important;
+  background-color: var(--bs-input-bg) !important;
+  border-color: var(--bs-input-border-color) !important;
+
+  &::placeholder {
+    color: var(--bs-text-muted, var(--bs-secondary-color)) !important;
+    opacity: 0.8 !important;
+  }
+
+  &:focus {
+    color: var(--bs-input-focus-color) !important;
+    background-color: var(--bs-input-bg) !important;
+    border-color: var(--bs-input-focus-border-color) !important;
+  }
+
+  &:disabled {
+    background-color: var(--bs-secondary-bg) !important;
+    opacity: 0.6 !important;
+  }
+  &.is-invalid {
+    border-color: var(--bs-danger) !important;
+  }
+}
+
+// Select elements
+.form-select {
+  color: var(--bs-form-select-color) !important;
+  background-color: var(--bs-form-select-bg) !important;
+  border-color: var(--bs-form-select-border-color) !important;
+
+  &:focus {
+    border-color: var(--bs-form-select-focus-border-color) !important;
+  }
+  &.is-invalid {
+    border-color: var(--bs-danger) !important;
+  }
+}
+
+// Bootstrap card header overrides for dark mode
+.card-header,
+.card-header-default {
+  background-color: var(--bs-card-header-bg, var(--bs-secondary-bg)) !important;
+  border-bottom: 2px solid var(--bs-border-color) !important; // Stronger border
+  color: var(--bs-body-color) !important;
+
+  // All text in card header
+  p,
+  span,
+  div,
+  label,
+  small {
+    color: var(--bs-body-color) !important;
+  }
+
+  // Card titles in header
+  .card-title,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .h1,
+  .h2,
+  .h3,
+  .h4,
+  .h5,
+  .h6 {
+    color: var(--bs-body-color) !important;
+    font-weight: map.get($font-weights, semibold);
+    line-height: 1.4;
+  }
+
+  // Muted text
+  .text-muted,
+  .text-secondary {
+    color: var(--bs-text-muted, var(--bs-secondary-color)) !important;
+    opacity: 0.9;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .cursor-default {
+    cursor: default;
+  }
+
+  // Buttons in header should maintain their colors
+  .btn-primary {
+    color: var(--bs-white, #ffffff) !important;
+  }
+
+  .btn-outline-primary {
+    color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+  }
+
+  .btn-outline-secondary {
+    color: var(--bs-secondary) !important;
+    border-color: var(--bs-secondary) !important;
+  }
+}
+
+/* Editor area */
+.ProseMirror {
+  outline: none;
+  min-height: 200px;
+  padding: map.get($spacers, 2);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: map.get($line-heights, normal);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+}
+
+/* Placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--bs-secondary-color, var(--bs-gray-500));
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* Headings */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  font-weight: map.get($font-weights, semibold);
+  color: var(--bs-body-color);
+  line-height: map.get($line-heights, tight);
+}
+
+.ProseMirror h1 {
+  font-size: map.get($font-sizes, xxl);
+  margin-bottom: map.get($spacers, 3);
+}
+
+.ProseMirror h2 {
+  font-size: map.get($font-sizes, xl);
+  margin-bottom: map.get($spacers, 2);
+}
+
+.ProseMirror h3 {
+  font-size: map.get($font-sizes, lg);
+  margin-bottom: map.get($spacers, 1);
+}
+
+/* Blockquote */
+.ProseMirror blockquote {
+  border-left: 3px solid var(--bs-border-color);
+  margin: map.get($spacers, 2) 0;
+  padding-left: map.get($spacers, 2);
+  font-style: italic;
+  color: var(--bs-body-color);
+  background-color: var(--bs-secondary-bg);
+  padding: map.get($spacers, 2);
+  border-radius: map.get($border-radii, sm);
+}
+
+/* Preformatted text / code blocks */
+.ProseMirror pre {
+  background-color: var(--bs-secondary-bg);
+  border-radius: map.get($border-radii, md);
+  padding: map.get($spacers, 2);
+  margin: map.get($spacers, 2) 0;
+  overflow-x: auto;
+  border: 1px solid var(--bs-border-color);
+}
+
+.ProseMirror code {
+  background-color: var(--bs-secondary-bg);
+  padding: 0.125rem 0.375rem;
+  border-radius: map.get($border-radii, sm);
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-size: map.get($font-sizes, sm);
+  color: var(--bs-danger);
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  margin: map.get($spacers, 2) 0;
+  padding-left: map.get($spacers, 4);
+}
+
+.ProseMirror li {
+  margin-bottom: map.get($spacers, 1);
+}
+
+/* Links */
+.ProseMirror a {
+  color: var(--bs-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--bs-primary);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ProseMirror a:hover {
+  color: var(--bs-primary-hover, #{$primary-hover});
+  border-bottom-color: var(--bs-primary-hover, #{$primary-hover});
+}
+
+.ProseMirror a:visited {
+  color: var(--bs-primary);
+  opacity: 0.8;
+}
+
+.ProseMirror a:active {
+  color: var(--bs-primary);
+  opacity: 0.9;
+}
+
+/* Images */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: map.get($border-radii, md);
+  margin: map.get($spacers, 2) 0;
+}
+
+/* Toolbar */
+.tiptap-toolbar {
+  border: 1px solid var(--bs-border-color);
+  border-bottom: none;
+  border-radius: map.get($border-radii, md) map.get($border-radii, md) 0 0;
+  background-color: var(--bs-secondary-bg);
+  padding: map.get($spacers, 2);
+  user-select: none;
+}
+
+.tiptap-toolbar .btn {
+  border-radius: map.get($border-radii, sm);
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--bs-body-color);
+  padding: 0.375rem 0.5rem;
+  font-size: map.get($font-sizes, sm);
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tiptap-toolbar .btn:hover {
+  background-color: var(--bs-tertiary-bg);
+  border-color: var(--bs-border-color);
+}
+
+.tiptap-toolbar .btn:active {
+  background-color: var(--bs-tertiary-bg);
+}
+
+/* Primary button */
+.tiptap-toolbar .btn-primary {
+  background-color: var(--bs-primary);
+  color: var(--bs-white, #{$white});
+  border-color: var(--bs-primary);
+}
+
+.tiptap-toolbar .btn-primary:hover {
+  background-color: var(--bs-primary-hover, #{$primary-hover});
+  border-color: var(--bs-primary-hover, #{$primary-hover});
+}
+
+.tiptap-toolbar .btn-primary:active {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+/* Editor Content */
+.tiptap-editor-content {
+  border: 1px solid var(--bs-border-color);
+  border-top: none;
+  border-radius: 0 0 map.get($border-radii, md) map.get($border-radii, md);
+  background-color: var(--bs-body-bg);
+  min-height: 200px;
+  color: var(--bs-body-color);
+}
+
+/* Inputs, color picker, font select */
+.tiptap-link-input,
+.tiptap-font-controls select,
+.tiptap-color-picker {
+  border: 1px solid var(--bs-border-color);
+  border-radius: map.get($border-radii, sm);
+  background-color: var(--bs-input-bg);
+  color: var(--bs-input-color);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.tiptap-link-input:focus,
+.tiptap-font-controls select:focus,
+.tiptap-color-picker:focus {
+  border-color: var(--bs-input-focus-border-color);
+  outline: 0;
+  box-shadow: 0 0 0 0.125rem rgba(var(--bs-input-focus-shadow-rgb, 96, 54, 149), 0.15);
+}
+
+/* Selection */
+.ProseMirror ::selection {
+  background-color: rgba(var(--bs-primary-rgb, 96, 54, 149), 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tiptap-toolbar .d-flex {
+    flex-wrap: wrap;
+  }
+
+  .tiptap-toolbar .btn {
+    margin: 1px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .tiptap-font-controls select {
+    min-width: 80px;
+    font-size: 0.8rem;
+  }
+}
+
+.main-content {
+  padding-left: 190px;
+  margin-top: 3rem;
+  min-height: calc(100vh - 10px);
+  background-color: var(--bs-light-blue);
+  transition: padding-left 0.3s ease;
+}
+
+.sidebar-close .main-content {
+  padding-left: 80px;
+}
+
+.search-input-wrapper {
+  flex: 100%;
+  width: 250px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--bs-border-color);
+  padding: 0.5rem 0.75rem;
+  border-radius: map.get($border-radii, md);
+  background-color: var(--bs-input-bg);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  .form-control {
+    padding: 0;
+  }
+  &:focus-within {
+    border-color: var(--bs-input-focus-border-color);
+    box-shadow: 0 0 0 0.125rem rgba(var(--bs-input-focus-shadow-rgb, 96, 54, 149), 0.15);
+  }
+}

@@ -1,0 +1,398 @@
+# Testing Standards
+
+## Testing Stack
+- **Storybook**: Component development, documentation, and visual testing (v9.0.15)
+- **Vitest**: Unit and integration testing (v3.2.4)
+- **Playwright**: End-to-end testing (v1.53.2)
+- **React Testing Library**: Component testing utilities (via Vitest)
+- **@storybook/addon-vitest**: Vitest integration with Storybook
+- **@storybook/addon-a11y**: Accessibility testing in Storybook
+
+## Test File Organization
+- **Stories**: `ComponentName.stories.tsx` alongside component files (for pure components)
+- **Unit tests**: `ComponentName.test.tsx` alongside component files (when needed)
+- **Integration tests**: `__tests__/` folders for feature tests (when needed)
+- **E2E tests**: `tests/` directory at project root (when needed)
+- **Storybook stories location**: Same folder as component (e.g., `Button/Button.stories.tsx`)
+
+## Storybook Pattern
+
+Storybook is the primary testing and documentation tool. Create stories for all pure components:
+
+### Template Pattern (Current Pattern)
+```typescript
+// Button/Button.stories.tsx
+import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
+import { Plus } from 'lucide-react';
+import Button from './Button';
+
+export default {
+  title: 'Components/Button',
+  component: Button,
+  tags: ['autodocs'],
+  argTypes: {
+    type: {
+      control: 'select',
+      options: ['primary', 'secondary', 'tertiary', 'icon', 'iconBordered', 'danger'],
+    },
+    size: {
+      control: 'select',
+      options: ['small', 'medium', 'large'],
+    },
+    loading: {
+      control: 'boolean',
+    },
+    disabled: {
+      control: 'boolean',
+    },
+  },
+} as Meta<typeof Button>;
+
+const Template: StoryFn<typeof Button> = (args) => <Button {...args} />;
+
+// Basic story
+export const Basic = Template.bind({});
+Basic.args = {
+  children: 'Button',
+  type: 'primary',
+};
+
+// Variant showcase (using component composition)
+export const Variants = () => (
+  <div className="d-flex flex-column gap-2">
+    <Button type="primary">Primary</Button>
+    <Button type="secondary">Secondary</Button>
+    <Button type="tertiary">Tertiary</Button>
+    <Button type="icon" icon={<Plus size={16} />} size="large" />
+    <Button type="iconBordered" icon={<Plus size={16} />} />
+    <Button type="danger">Danger</Button>
+  </div>
+);
+
+// State stories
+export const Loading = () => (
+  <div className="d-flex flex-column gap-2">
+    <Button type="primary" loading>Primary</Button>
+    <Button type="secondary" loading>Secondary</Button>
+    <Button type="tertiary" loading>Tertiary</Button>
+  </div>
+);
+
+export const Disabled = () => (
+  <div className="d-flex flex-column gap-2">
+    <Button type="primary" disabled>Primary</Button>
+    <Button type="secondary" disabled>Secondary</Button>
+    <Button type="tertiary" disabled>Tertiary</Button>
+  </div>
+);
+```
+
+### Alternative: StoryObj Pattern
+You can also use the newer `StoryObj` pattern:
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import Button from './Button';
+
+const meta: Meta<typeof Button> = {
+  title: 'Components/Button',
+  component: Button,
+  tags: ['autodocs'],
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    type: 'primary',
+    children: 'Button',
+  },
+};
+```
+
+### Storybook Configuration
+
+Storybook is configured in `.storybook/main.ts`:
+- Uses `@storybook/nextjs` framework
+- Supports SCSS modules with global variables
+- Path aliases configured (`@/` and `@locales`)
+- Includes addons: docs, controls, a11y, vitest
+
+## Component Testing Pattern (Vitest)
+
+When unit tests are needed, use Vitest with React Testing Library:
+
+```typescript
+// ComponentName.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import ComponentName from './ComponentName';
+
+describe('ComponentName', () => {
+  const defaultProps = {
+    title: 'Test Title',
+    onClick: vi.fn(),
+  };
+
+  it('renders with default props', () => {
+    render(<ComponentName {...defaultProps} />);
+    
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  it('calls onClick when button is clicked', () => {
+    render(<ComponentName {...defaultProps} />);
+    
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+    
+    expect(defaultProps.onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('applies custom className', () => {
+    render(<ComponentName {...defaultProps} className="custom-class" />);
+    
+    const element = screen.getByRole('button');
+    expect(element).toHaveClass('custom-class');
+  });
+
+  it('renders different variants correctly', () => {
+    const { rerender } = render(
+      <ComponentName {...defaultProps} variant="primary" />
+    );
+    
+    let element = screen.getByRole('button');
+    expect(element).toHaveClass('btn-primary');
+    
+    rerender(<ComponentName {...defaultProps} variant="secondary" />);
+    element = screen.getByRole('button');
+    expect(element).toHaveClass('btn-secondary');
+  });
+});
+```
+
+## Hook Testing Pattern
+
+Test custom hooks with `renderHook`:
+
+```typescript
+// useCustomHook.test.ts
+import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { useCustomHook } from './useCustomHook';
+
+describe('useCustomHook', () => {
+  it('returns initial state', () => {
+    const { result } = renderHook(() => useCustomHook());
+    
+    expect(result.current.value).toBe(0);
+    expect(typeof result.current.increment).toBe('function');
+  });
+
+  it('increments value when increment is called', () => {
+    const { result } = renderHook(() => useCustomHook());
+    
+    act(() => {
+      result.current.increment();
+    });
+    
+    expect(result.current.value).toBe(1);
+  });
+});
+```
+
+## API/Service Testing Pattern
+
+Test services by mocking the API client:
+
+```typescript
+// userService.test.ts
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { userService } from './user';
+import { api } from '@/utils/api';
+
+// Mock the API module
+vi.mock('@/utils/api');
+
+describe('userService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('fetches users successfully', async () => {
+    const mockUsers = [
+      { id: 1, name: 'John Doe', email: 'john@example.com' },
+      { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+    ];
+
+    vi.mocked(api.get).mockResolvedValue({
+      data: {
+        success: true,
+        message: 'Success',
+        data: {
+          total: 2,
+          users: mockUsers,
+        },
+      },
+      status: 200,
+    });
+
+    const result = await userService.getUsers(1, 10);
+    
+    expect(api.get).toHaveBeenCalled();
+    expect(result.users).toEqual(mockUsers);
+    expect(result.total).toBe(2);
+  });
+
+  it('handles API errors', async () => {
+    const error = { message: 'API Error', status: 500 };
+    vi.mocked(api.get).mockRejectedValue(error);
+
+    await expect(userService.getUsers(1, 10)).rejects.toEqual(error);
+  });
+});
+```
+
+## React Query Hook Testing
+
+Test React Query hooks with proper setup:
+
+```typescript
+// useUsersQuery.test.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { describe, it, expect, vi } from 'vitest';
+import { useUsersQuery } from './user';
+import { userService } from '@/services/user';
+
+vi.mock('@/services/user');
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+};
+
+describe('useUsersQuery', () => {
+  it('fetches users successfully', async () => {
+    const mockUsers = { total: 2, users: [] };
+    vi.mocked(userService.getUsers).mockResolvedValue(mockUsers);
+
+    const { result } = renderHook(
+      () => useUsersQuery(1, 10),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual(mockUsers);
+  });
+});
+```
+
+## Storybook Addons
+
+### Accessibility Testing
+Use `@storybook/addon-a11y` for accessibility testing:
+
+```typescript
+export default {
+  title: 'Components/Button',
+  component: Button,
+  parameters: {
+    a11y: {
+      config: {
+        rules: [
+          {
+            id: 'color-contrast',
+            enabled: true,
+          },
+        ],
+      },
+    },
+  },
+};
+```
+
+### Documentation
+Use `tags: ['autodocs']` for automatic documentation generation.
+
+## Testing Best Practices
+
+### Component Testing
+- **Test behavior, not implementation**: Focus on what the component does, not how
+- **Use semantic queries**: Prefer `getByRole`, `getByLabelText` over `getByTestId`
+- **Test accessibility**: Ensure components are accessible (use Storybook a11y addon)
+- **Test variants**: Create stories for all component variants
+- **Test states**: Test loading, disabled, error states
+- **Test interactions**: Test user interactions (clicks, form submissions)
+- **Test themes**: **Always test components in both light and dark themes** - verify colors are visible and readable
+
+### Service/Hook Testing
+- **Mock external dependencies**: Mock API calls, timers, and browser APIs
+- **Test error states**: Verify error handling and edge cases
+- **Test loading states**: Verify loading states are handled correctly
+- **Test data transformations**: Verify data is transformed correctly
+
+### Storybook Best Practices
+- **Create stories for all pure components**: Document all reusable components
+- **Show all variants**: Create stories for each variant/state
+- **Use controls**: Make stories interactive with controls
+- **Add descriptions**: Document component props and usage
+- **Test accessibility**: Use a11y addon to catch accessibility issues
+
+## Coverage Requirements
+
+While coverage requirements may vary, aim for:
+- **Components**: 80% line coverage (focus on critical paths)
+- **Hooks**: 90% line coverage (business logic is critical)
+- **Utilities**: 95% line coverage (utilities should be well-tested)
+- **Services**: 80% line coverage (API integration points)
+- **Critical paths**: 100% coverage for authentication and payment flows
+
+## Running Tests
+
+### Storybook
+```bash
+npm run storybook
+# or
+yarn storybook
+```
+
+### Vitest (when configured)
+```bash
+npm run test
+# or
+yarn test
+```
+
+### Playwright (when configured)
+```bash
+npm run test:e2e
+# or
+yarn test:e2e
+```
+
+## Storybook Configuration
+
+The project uses Storybook with:
+- **Framework**: `@storybook/nextjs` (Next.js integration)
+- **Addons**: 
+  - `@storybook/addon-docs` - Documentation
+  - `@storybook/addon-controls` - Interactive controls
+  - `@storybook/addon-a11y` - Accessibility testing
+  - `@storybook/addon-vitest` - Vitest integration
+- **Path aliases**: Configured for `@/` and `@locales`
+- **SCSS support**: Global SCSS variables imported automatically
+description:
+globs:
+alwaysApply: false
+---

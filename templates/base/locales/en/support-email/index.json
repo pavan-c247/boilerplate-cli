@@ -1,0 +1,60 @@
+{
+  "pageTitle": "Support Email Configuration",
+  "emailConfig": {
+    "title": "Support Email Configuration",
+    "description": "All support form submissions will be sent to the email addresses configured below.",
+    "primaryEmail": {
+      "label": "Primary Support Email",
+      "placeholder": "Enter email address",
+      "required": "Primary support email is required",
+      "invalid": "Please enter a valid email address"
+    },
+    "ccEmails": {
+      "label": "CC Emails",
+      "placeholder": "Enter email address",
+      "invalid": "One or more email addresses are invalid",
+      "help": "Separate multiple email addresses with commas"
+    }
+  },
+  "supportForm": {
+    "title": "Support Form",
+    "status": {
+      "label": "Support Form Status",
+      "description": "Turn this on to allow users to submit support requests from the platform.",
+      "toggleLabel": "Enable Support Form"
+    },
+    "fields": {
+      "label": "Support Form Fields",
+      "description": "Select which fields users must complete before submitting a support request.",
+      "table": {
+        "field": "Field",
+        "enabled": "Enabled",
+        "required": "Required"
+      },
+      "info": "Supported categories include General Inquiry, Billing & Subscription, Technical Issue, PRIME AI, EDGE / PULSE Tools, and Account & Login."
+    }
+  },
+  "autoReply": {
+    "title": "Auto-Reply Configuration",
+    "enabled": {
+      "label": "Auto-Reply To User",
+      "description": "This message is automatically sent after a user submits the support form.",
+      "toggleLabel": "Enable Auto-Reply"
+    },
+    "message": {
+      "label": "Auto-Reply Message",
+      "placeholder": "Enter your auto-reply message here...",
+      "required": "Auto-reply message is required when auto-reply is enabled",
+      "jsonHint": "JSON format detected. The message will be formatted for better readability."
+    }
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "saving": "Saving..."
+  },
+  "messages": {
+    "saveSuccess": "Support email configuration saved successfully",
+    "saveError": "Failed to save support email configuration. Please try again."
+  }
+}

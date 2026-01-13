@@ -1,0 +1,14 @@
+// Import bootstrap functions first (needed for variable calculations)
+@import "bootstrap/scss/functions";
+
+// Note: Our custom variables are already imported in main.scss via @use
+// Bootstrap variables will be imported next and will use Bootstrap defaults
+// Our CSS variable overrides in colors.scss will take precedence at runtime
+
+// Enable CSS variables (Bootstrap 5.3+ feature)
+$enable-css-variables: true;
+
+// Import Bootstrap variables, mixins, and core
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/bootstrap";

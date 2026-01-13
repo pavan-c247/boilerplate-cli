@@ -1,0 +1,69 @@
+{
+  "title": "Simple Listing",
+  "cardListTitle":"Card Listing",
+  "accordianList":"Accordian List",
+  "fixedColumnTitle": "Fixed Column Listing",
+  "dragDropColumnTitle": "Drag & Drop Column Listing",
+  "rowInteractionTitle": "Row Interaction Listing",
+  "rowInteractionV2Title": "Row Interaction V2 Listing",
+  "createList": "Create List",
+  "searchPlaceholder": "Search lists...",
+  "name": "Name",
+  "email": "Email",
+  "phone": "Phone",
+  "countryCode": "Country Code",
+  "twoFAMethods": "2FA Methods",
+  "twoFA":"2FA",
+  "status": "Status",
+  "createdAt": "Created At",
+  "updatedAt": "Updated At",
+  "statusOptions": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "role": "Role",
+  "actions": "Actions",
+  "view": "View",
+  "edit": "Edit",
+  "delete": "Delete",
+  "noLists": "No lists found",
+  "noData": "No data found",
+  "confirmDelete": "Are you sure you want to delete this item?",
+  "confirmText": "Are you sure you want to proceed?",
+  "listDetails": "List Details",
+  "save": "Save",
+  "update": "Update",
+  "cancel": "Cancel",
+  "createNewList": "Create New List",
+  "enabled": "Enable",
+  "disabled": "Disable",
+  "editList": "Edit List",
+  "roles": {
+    "admin": "Admin",
+    "user": "User"
+  },
+  "form": {
+    "nameRequired": "Name is required",
+    "emailRequired": "Email is required",
+    "statusRequired": "Status is required"
+  },
+  "messages": {
+    "listCreated": "List created successfully",
+    "listUpdated": "List updated successfully",
+    "listDeleted": "List deleted successfully",
+    "error": "An error occurred. Please try again."
+  },
+   "userDetails": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "contact": "Contact",
+      "secondaryContact": "Secondary Contact",
+      "timeExpenditure": "Time Expenditure",
+      "expensesValue": "Expenses Value",
+      "tags": "Tags",
+      "dockerInfo": "Docker Info",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+}

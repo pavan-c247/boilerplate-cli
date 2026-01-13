@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    /* ========================
+       Build Output
+    ======================== */
+    "rootDir": ".",
+    "outDir": "dist",
+
+    /* ========================
+       Module System
+    ======================== */
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+
+    /* ========================
+       Runtime Environment
+    ======================== */
+    "lib": ["ESNext"],
+    "types": ["node"],
+
+    /* ========================
+       ESM Compatibility
+    ======================== */
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": false,
+
+    /* ========================
+       Type Safety
+    ======================== */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* ========================
+       Output Quality
+    ======================== */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* ========================
+       Misc
+    ======================== */
+    "skipLibCheck": true
+  },
+  "include": ["cli"]
+}

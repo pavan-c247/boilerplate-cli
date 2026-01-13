@@ -1,0 +1,477 @@
+@use "sass:map";
+@use "@/assets/scss/variables.scss" as *;
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: map.get($spacers, 6);
+  width: 100%;
+  padding: map.get($spacers, 4);
+  background-color: var(--bs-secondary-bg);
+  border-radius: map.get($border-radii, lg);
+  border: 1px solid var(--bs-border-color);
+}
+
+// Stepper variant
+.stepper {
+  flex-direction: row;
+  gap: map.get($spacers, 2);
+  width: 100%;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacers, 3);
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  transition: all 0.2s ease;
+}
+
+.stepContent {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacers, 3);
+  flex: 1;
+}
+
+.stepIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--bs-success) !important;
+  color: var(--bs-white, #ffffff) !important;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stepNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--bs-border-color);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-text-muted, var(--bs-secondary-color));
+  font-weight: map.get($font-weights, semibold);
+  font-size: map.get($font-sizes, sm);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.stepLabel {
+  display: flex;
+  flex-direction: column;
+  gap: map.get($spacers, 1);
+  min-width: 0;
+}
+
+.stepTitle {
+  font-weight: map.get($font-weights, medium);
+  font-size: map.get($font-sizes, sm);
+  color: var(--bs-body-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.stepDescription {
+  font-size: map.get($font-sizes, xs);
+  color: var(--bs-text-muted, var(--bs-secondary-color));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.stepConnector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--bs-border-color);
+  margin: 0 map.get($spacers, 2);
+  min-width: 2rem;
+  border-radius: 1px;
+  transition: background-color 0.2s ease;
+}
+
+// Step states
+// Active state ALWAYS takes priority - active step should always be primary color
+.step.active {
+  .stepNumber {
+    border-color: var(--bs-primary) !important;
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-white, #ffffff) !important;
+    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb, 96, 54, 149), 0.15);
+  }
+
+  .stepIcon {
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-white, #ffffff) !important;
+    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb, 96, 54, 149), 0.15);
+  }
+
+  .stepTitle {
+    color: var(--bs-primary) !important;
+    font-weight: map.get($font-weights, semibold);
+  }
+
+  .stepDescription {
+    color: var(--bs-text-muted, var(--bs-secondary-color));
+  }
+}
+
+// Active overrides completed - ensure active always shows primary even when completed
+.step.active.completed {
+  .stepNumber {
+    border-color: var(--bs-primary) !important;
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-white, #ffffff) !important;
+    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb, 96, 54, 149), 0.15);
+  }
+
+  .stepIcon {
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-white, #ffffff) !important;
+    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb, 96, 54, 149), 0.15);
+  }
+
+  .stepTitle {
+    color: var(--bs-primary) !important;
+    font-weight: map.get($font-weights, semibold);
+  }
+}
+
+.step.completed {
+  .stepNumber {
+    border-color: var(--bs-success);
+    background-color: var(--bs-success);
+    color: var(--bs-white, #ffffff);
+  }
+
+  .stepConnector {
+    background-color: var(--bs-success);
+  }
+
+  .stepTitle {
+    color: var(--bs-body-color);
+  }
+}
+
+.step.clickable {
+  cursor: pointer;
+
+  &:hover {
+    .stepNumber {
+      border-color: var(--bs-primary);
+      transform: scale(1.05);
+    }
+
+    .stepTitle {
+      color: var(--bs-primary);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 4px;
+    border-radius: map.get($border-radii, sm);
+  }
+}
+
+// Numbers variant
+.numbers {
+  flex-wrap: wrap;
+  gap: map.get($spacers, 4);
+}
+
+.numbers .step {
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: map.get($spacers, 2);
+}
+
+// Dots variant
+.dots {
+  gap: map.get($spacers, 3);
+}
+
+.dot {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background-color: var(--bs-border-color);
+  cursor: default;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+  // Active state ALWAYS takes priority - active dot should always be primary
+  &.active {
+    background-color: var(--bs-primary) !important;
+    transform: scale(1.3);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb, 96, 54, 149), 0.2);
+  }
+
+  // Active overrides completed - ensure active always shows primary even when completed
+  &.active.completed {
+    background-color: var(--bs-primary) !important;
+    transform: scale(1.3);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb, 96, 54, 149), 0.2);
+  }
+
+  &.completed {
+    background-color: var(--bs-success);
+    transform: scale(1.1);
+  }
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      transform: scale(1.15);
+      background-color: var(--bs-primary);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Tabs variant
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  margin-bottom: 0;
+  border-bottom: 2px solid var(--bs-border-color);
+  padding: 0;
+  background-color: transparent;
+}
+
+.tab {
+  position: relative;
+  padding: map.get($spacers, 3) map.get($spacers, 5);
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: map.get($border-radii, md) map.get($border-radii, md) 0 0;
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-text-muted, var(--bs-secondary-color));
+  font-weight: map.get($font-weights, medium);
+  font-size: map.get($font-sizes, sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: map.get($spacers, 1);
+  z-index: 1;
+  white-space: nowrap;
+  min-width: fit-content;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:hover:not(:disabled):not(.tabActive) {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+    z-index: 2;
+  }
+}
+
+.tabActive {
+  background-color: var(--bs-body-bg) !important;
+  color: var(--bs-primary) !important;
+  border-color: var(--bs-border-color) !important;
+  border-bottom-color: var(--bs-body-bg) !important;
+  z-index: 2;
+  font-weight: map.get($font-weights, semibold);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+
+  // Active tab borders
+  border-top-color: var(--bs-border-color) !important;
+  border-left-color: var(--bs-border-color) !important;
+  border-right-color: var(--bs-border-color) !important;
+
+  // Ensure active tab ALWAYS shows primary color, regardless of any other state
+  &:hover,
+  &:focus,
+  &:active,
+  &:disabled,
+  &.tabClickable,
+  &.tabInactive {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-primary) !important;
+    border-color: var(--bs-border-color) !important;
+    border-bottom-color: var(--bs-body-bg) !important;
+  }
+}
+
+.tabInactive {
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-text-muted, var(--bs-secondary-color));
+}
+
+.tabClickable {
+  cursor: pointer;
+}
+
+// Step Navigation
+.stepNavigation {
+  margin-top: map.get($spacers, 6);
+  padding-top: map.get($spacers, 5);
+  border-top: 2px solid var(--bs-border-color);
+  background-color: var(--bs-secondary-bg);
+  padding: map.get($spacers, 4);
+  border-radius: map.get($border-radii, lg);
+  margin-left: calc(map.get($spacers, 4) * -1);
+  margin-right: calc(map.get($spacers, 4) * -1);
+  margin-bottom: calc(map.get($spacers, 4) * -1);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.navigationButtons {
+  display: flex;
+  align-items: center;
+  gap: map.get($spacers, 3);
+  justify-content: flex-end;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.prevButton,
+.nextButton,
+.submitButton {
+  min-width: 120px;
+  font-weight: map.get($font-weights, medium);
+}
+
+// Step Content
+.stepContent {
+  width: 100%;
+  min-height: 300px;
+  padding: map.get($spacers, 4);
+  background-color: var(--bs-body-bg);
+  border-radius: map.get($border-radii, md);
+}
+
+.stepContent.animate {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: map.get($breakpoints, md)) {
+  .stepIndicator {
+    padding: map.get($spacers, 3);
+    margin-bottom: map.get($spacers, 4);
+  }
+
+  .stepper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: map.get($spacers, 2);
+  }
+
+  .stepConnector {
+    width: 2px;
+    height: 2rem;
+    margin: map.get($spacers, 2) 0 map.get($spacers, 2) map.get($spacers, 4);
+    min-width: 2px;
+    min-height: 2rem;
+  }
+
+  .stepTitle {
+    font-size: map.get($font-sizes, xs);
+  }
+
+  .stepDescription {
+    font-size: map.get($font-sizes, xs);
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--bs-border-color);
+  }
+
+  .tab {
+    flex: 1 1 auto;
+    min-width: 0;
+    border-radius: map.get($border-radii, md);
+    border: 1px solid var(--bs-border-color);
+    margin-right: map.get($spacers, 2);
+    margin-bottom: map.get($spacers, 2);
+    padding: map.get($spacers, 2) map.get($spacers, 3);
+    font-size: map.get($font-sizes, xs);
+  }
+
+  .tabActive {
+    border-radius: map.get($border-radii, md);
+    margin-bottom: map.get($spacers, 2);
+  }
+
+  .stepNavigation {
+    margin-left: calc(map.get($spacers, 3) * -1);
+    margin-right: calc(map.get($spacers, 3) * -1);
+    margin-bottom: calc(map.get($spacers, 3) * -1);
+    padding: map.get($spacers, 3);
+  }
+
+  .navigationButtons {
+    flex-direction: column-reverse;
+    gap: map.get($spacers, 2);
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .prevButton,
+  .nextButton,
+  .submitButton {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .stepContent {
+    padding: map.get($spacers, 3);
+    min-height: 250px;
+  }
+}

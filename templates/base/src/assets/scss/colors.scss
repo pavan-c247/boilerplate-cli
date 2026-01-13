@@ -1,0 +1,189 @@
+@use "sass:map";
+@use "./variables" as *;
+
+// =====================================================
+// Light Theme CSS Variables
+// =====================================================
+:root,
+[data-bs-theme="light"],
+.light {
+  --bs-body-color: #{$body-color};
+  --bs-body-bg: #{$body-bg};
+  --bs-secondary-bg: #{$secondary-bg};
+  --bs-tertiary-bg: #{$tertiary-bg};
+  --bs-light-blue: #{$light-blue};
+  --bs-ghost-white: #{$ghost-white};
+  
+  // Card header background for light mode
+  --bs-card-header-bg: #{$secondary-bg};
+  --bs-text-color: #{$body-color};
+  --bs-border-color: #{$border-color};
+  --bs-border-color-translucent: rgba(0, 0, 0, 0.08);
+  --bs-border-width: 1px;
+  --bs-border-style: solid;
+
+  // Form controls
+  --bs-input-bg: #{$body-bg};
+  --bs-input-color: #{$body-color};
+  --bs-input-border-color: #{$border-color};
+  --bs-input-focus-border-color: #{$primary};
+  --bs-input-focus-color: #{$body-color};
+  --bs-input-focus-shadow-rgb: 96, 54, 149;
+
+  --bs-form-select-bg: #{$body-bg};
+  --bs-form-select-color: #{$body-color};
+  --bs-form-select-border-color: #{$border-color};
+  --bs-form-select-focus-border-color: #{$primary};
+
+  --bs-form-check-bg: #{$body-bg};
+  --bs-form-check-input-bg: #{$body-bg};
+  --bs-form-check-input-border-color: #{$border-color};
+  --bs-form-check-input-checked-bg: #{$primary};
+  --bs-form-check-input-checked-border-color: #{$primary};
+  --bs-form-check-input-focus-border: #{$primary};
+  --bs-form-check-input-focus-shadow-rgb: 96, 54, 149;
+
+  --bs-form-switch-bg: #{$gray-300};
+  --bs-form-switch-checked-bg: #{$primary};
+
+  --bs-form-range-thumb-bg: #{$primary};
+  --bs-form-range-track-bg: #{$gray-200};
+
+  // Auto-generate theme colors with RGB values
+  @each $name, $value in $theme-colors {
+    --bs-#{$name}: #{$value};
+    @if type-of($value) == color {
+      --bs-#{$name}-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
+    } @else {
+      --bs-#{$name}-rgb: 0, 0, 0;
+    }
+  }
+
+  // Additional primary color variants
+  --bs-primary-hover: #{$primary-hover};
+  --bs-primary-light: #{$primary-light};
+  --bs-primary-lighter: #{$primary-lighter};
+  --bs-white: #{$white};
+
+  // Muted/secondary text colors for better readability
+  --bs-secondary-color: #{$gray-500}; // Muted text color
+  --bs-muted-color: #{$gray-500}; // Alias for muted text
+  --bs-text-muted: #{$gray-500}; // Bootstrap text-muted equivalent
+  --bs-gray-500: #{$gray-500};
+  --bs-gray-400: #{$gray-400};
+  --bs-gray-600: #{$gray-600};
+}
+
+// =====================================================
+// Dark Theme CSS Variables
+// =====================================================
+[data-bs-theme="dark"],
+.dark {
+  --bs-body-color: #{$dark-body-color};
+  --bs-body-bg: #{$dark-body-bg};
+  --bs-secondary-bg: #{$dark-secondary-bg};
+  --bs-tertiary-bg: #{$dark-tertiary-bg};
+  --bs-light-blue: #{$dark-light-blue};
+  --bs-ghost-white: #{$dark-ghost-white};
+  
+  // Enhanced card header background for better visibility in dark mode
+  // Use a slightly lighter shade than secondary-bg for better contrast
+  --bs-card-header-bg: #{$dark-gray-200}; // #334155 - more visible than secondary-bg
+  --bs-text-color: #{map.get($dark-theme-colors, text)};
+  --bs-border-color: #{map.get($dark-theme-colors, border)};
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.12);
+  --bs-border-width: 1px;
+  --bs-border-style: solid;
+
+  // Form controls
+  --bs-input-bg: #{$dark-secondary-bg};
+  --bs-input-color: #{$dark-body-color};
+  --bs-input-border-color: #{map.get($dark-theme-colors, border)};
+  --bs-input-focus-border-color: #{map.get($dark-theme-colors, primary)};
+  --bs-input-focus-color: #{$dark-body-color};
+  --bs-input-focus-shadow-rgb: 139, 111, 199;
+
+  --bs-form-select-bg: #{$dark-secondary-bg};
+  --bs-form-select-color: #{$dark-body-color};
+  --bs-form-select-border-color: #{map.get($dark-theme-colors, border)};
+  --bs-form-select-focus-border-color: #{map.get($dark-theme-colors, primary)};
+
+  --bs-form-check-bg: #{$dark-secondary-bg};
+  --bs-form-check-input-bg: #{$dark-secondary-bg};
+  --bs-form-check-input-border-color: #{map.get($dark-theme-colors, border)};
+  --bs-form-check-input-checked-bg: #{map.get($dark-theme-colors, primary)};
+  --bs-form-check-input-checked-border-color: #{map.get($dark-theme-colors, primary)};
+  --bs-form-check-input-focus-border: #{map.get($dark-theme-colors, primary)};
+  --bs-form-check-input-focus-shadow-rgb: 139, 111, 199;
+
+  --bs-form-switch-bg: #{$gray-600};
+  --bs-form-switch-checked-bg: #{map.get($dark-theme-colors, primary)};
+
+  --bs-form-range-thumb-bg: #{map.get($dark-theme-colors, primary)};
+  --bs-form-range-track-bg: #{$gray-700};
+
+  // Auto-generate theme colors with RGB values
+  @each $name, $value in $dark-theme-colors {
+    --bs-#{$name}: #{$value};
+    @if type-of($value) == color {
+      --bs-#{$name}-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
+    } @else {
+      --bs-#{$name}-rgb: 255, 255, 255;
+    }
+  }
+
+  // Additional primary color variants for dark mode
+  --bs-primary-hover: #a28fd4; // Lighter purple for hover in dark mode
+  --bs-primary-light: rgba(139, 111, 199, 0.1); // Primary with 10% opacity
+  --bs-primary-lighter: rgba(139, 111, 199, 0.05); // Primary with 5% opacity
+  --bs-white: #{$white};
+
+  // Muted/secondary text colors for dark mode (lighter for readability)
+  --bs-secondary-color: #{$dark-gray-500}; // #94a3b8 - readable on dark background
+  --bs-muted-color: #{$dark-gray-500}; // Alias for muted text
+  --bs-text-muted: #{$dark-gray-500}; // Bootstrap text-muted equivalent
+  --bs-gray-500: #{$dark-gray-500};
+  --bs-gray-400: #{$dark-gray-400};
+  --bs-gray-600: #{$dark-gray-600};
+}
+
+/* =====================================================
+   Theme-Aware Component Utilities
+   These ensure proper color mapping across themes
+===================================================== */
+@each $name, $value in $theme-colors {
+  @if $name != text and $name != border {
+    // Light theme utilities
+    :root,
+    [data-bs-theme="light"],
+    .light {
+      .bg-#{$name} {
+        background-color: var(--bs-#{$name}) !important;
+      }
+
+      .border-#{$name} {
+        border-color: var(--bs-#{$name}) !important;
+      }
+
+      .text-#{$name} {
+        color: var(--bs-#{$name}) !important;
+      }
+    }
+
+    // Dark theme utilities
+    [data-bs-theme="dark"],
+    .dark {
+      .bg-#{$name} {
+        background-color: var(--bs-#{$name}) !important;
+      }
+
+      .border-#{$name} {
+        border-color: var(--bs-#{$name}) !important;
+      }
+
+      .text-#{$name} {
+        color: var(--bs-#{$name}) !important;
+      }
+    }
+  }
+}

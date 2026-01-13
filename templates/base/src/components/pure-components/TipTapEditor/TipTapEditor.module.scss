@@ -1,0 +1,221 @@
+@use "sass:map";
+@use "@/assets/scss/variables" as *;
+
+/* =====================================================
+   Root Editor
+===================================================== */
+.notionEditor {
+  font-family: var(--bs-body-font-family);
+  position: relative;
+  color: var(--bs-body-color);
+}
+
+/* =====================================================
+   Editor Container
+===================================================== */
+.editorContent {
+  border: 1px solid var(--bs-border-color);
+  border-radius: map.get($border-radii, lg);
+  background-color: var(--bs-body-bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
+  }
+
+  &.invalid {
+    border-color: var(--bs-danger);
+
+    &:focus-within {
+      box-shadow: 0 0 0 3px rgba(var(--bs-danger-rgb), 0.1);
+    }
+  }
+}
+
+/* =====================================================
+   Validation Error
+===================================================== */
+.editorError {
+  color: var(--bs-danger);
+  font-size: map.get($font-sizes, sm);
+  margin-top: map.get($spacers, 2);
+}
+
+/* =====================================================
+   ProseMirror Base
+===================================================== */
+.editorContent :global(.ProseMirror) {
+  padding: map.get($spacers, 6);
+  outline: none;
+  font-size: map.get($font-sizes, md);
+  line-height: 1.6;
+  color: var(--bs-body-color);
+  white-space: pre-wrap;
+}
+
+/* Paragraphs */
+.editorContent :global(.ProseMirror) p {
+  margin: map.get($spacers, 3) 0;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Placeholder */
+.editorContent
+  :global(.ProseMirror)
+  p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--bs-secondary);
+  pointer-events: none;
+}
+
+/* =====================================================
+   Headings
+===================================================== */
+.editorContent :global(.ProseMirror) h1 {
+  font-size: 2rem;
+  font-weight: map.get($font-weights, bold);
+  margin: map.get($spacers, 6) 0 map.get($spacers, 4);
+  color: var(--bs-body-color);
+}
+
+.editorContent :global(.ProseMirror) h2 {
+  font-size: 1.5rem;
+  font-weight: map.get($font-weights, semibold);
+  margin: map.get($spacers, 5) 0 map.get($spacers, 3);
+}
+
+.editorContent :global(.ProseMirror) h3 {
+  font-size: 1.25rem;
+  font-weight: map.get($font-weights, semibold);
+  margin: map.get($spacers, 4) 0 map.get($spacers, 2);
+}
+
+/* =====================================================
+   Block Elements
+===================================================== */
+.editorContent :global(.ProseMirror) blockquote {
+  border-left: 4px solid var(--bs-border-color);
+  padding-left: map.get($spacers, 4);
+  margin: map.get($spacers, 4) 0;
+  font-style: italic;
+  color: var(--bs-secondary);
+}
+
+/* Inline Code */
+.editorContent :global(.ProseMirror) code {
+  background: var(--bs-bg-light);
+  padding: 0.125rem 0.25rem;
+  border-radius: map.get($border-radii, sm);
+  font-family: var(--bs-body-font-family);
+  font-size: 0.875em;
+  color: var(--bs-danger);
+}
+
+/* Code Block */
+.editorContent :global(.ProseMirror) pre {
+  background: var(--bs-bg-light);
+  border: 1px solid var(--bs-border-color);
+  border-radius: map.get($border-radii, lg);
+  padding: map.get($spacers, 4);
+  margin: map.get($spacers, 4) 0;
+  overflow-x: auto;
+
+  code {
+    background: none;
+    padding: 0;
+    color: var(--bs-body-color);
+  }
+}
+
+/* Lists */
+.editorContent :global(.ProseMirror) ul,
+.editorContent :global(.ProseMirror) ol {
+  padding-left: map.get($spacers, 6);
+  margin: map.get($spacers, 3) 0;
+}
+
+/* Links */
+.editorContent :global(.ProseMirror) a {
+  color: var(--bs-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: var(--bs-info);
+  }
+
+  &:visited {
+    color: var(--bs-purple);
+  }
+}
+
+/* Divider */
+.editorContent :global(.ProseMirror) hr {
+  border-top: 1px solid var(--bs-border-color);
+  margin: map.get($spacers, 8) 0;
+}
+
+/* Selection */
+.editorContent :global(.ProseMirror) ::selection {
+  background: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+/* =====================================================
+   Bubble Menu
+===================================================== */
+.bubbleMenu {
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: map.get($border-radii, lg);
+   box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
+  padding: map.get($spacers, 2);
+  z-index: 1;
+}
+
+.bubbleMenuBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: map.get($border-radii, sm);
+  background: transparent;
+  color: var(--bs-secondary);
+
+  &:hover {
+    background: var(--bs-bg-light);
+    color: var(--bs-body-color);
+  }
+
+  &.active {
+    background: var(--bs-primary);
+    color: var(--bs-white);
+  }
+}
+
+/* =====================================================
+   Command / Block Menus
+===================================================== */
+.commandMenu,
+.blockActionsMenu {
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: map.get($border-radii, lg);
+   box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
+  z-index: 1;
+}
+
+.commandMenuItem,
+.blockActionItem {
+  border-radius: map.get($border-radii, md);
+  color: var(--bs-body-color);
+
+  &:hover {
+    background: var(--bs-bg-light);
+  }
+}

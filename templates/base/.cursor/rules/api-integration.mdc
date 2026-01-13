@@ -1,0 +1,285 @@
+# API Integration Patterns
+
+## Service Layer Architecture
+- **Services**: Place in `src/services/` for API calls (one file per domain)
+- **Hooks**: Place in `src/hooks/` for React Query hooks (one file per domain)
+- **Utils**: Place in `src/utils/api.ts` for base API client (axios instance)
+
+## Base API Client
+
+Use the centralized API client from [src/utils/api.ts](mdc:src/utils/api.ts) for all HTTP requests. The API client:
+- Uses axios with interceptors for auth token management
+- Automatically adds Bearer token from cookies
+- Handles 401 errors globally (clears tokens and redirects)
+- Transforms errors to `ApiError` format
+- Returns typed responses with `ApiResponse<T>` format
+
+```typescript
+import { api } from '@/utils/api';
+import type { ApiResponse } from '@/types';
+
+// GET request
+const response = await api.get<UserData>('/users/me');
+const userData = response.data; // Typed as UserData
+
+// POST request
+const response = await api.post<CreateUserResponse>('/users', userData);
+const createdUser = response.data; // Typed as CreateUserResponse
+
+// PUT request
+const response = await api.put<UpdateUserResponse>('/users/123', updates);
+const updatedUser = response.data; // Typed as UpdateUserResponse
+
+// DELETE request
+await api.delete('/users/123');
+```
+
+## Service Pattern
+
+Each service file should follow this structure:
+
+```typescript
+// src/services/user.ts
+import type { User } from '@/types/user';
+import { api } from '@/utils/api';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+export interface PaginatedResponse<T> {
+  total: number;
+  users: T[];
+}
+
+export interface UserCreateRequest {
+  name: string;
+  email: string;
+  status: number; // 0 = Active, 1 = Inactive
+}
+
+// ============================================================================
+// ENDPOINTS
+// ============================================================================
+const BASE_PATH = 'user';
+const ENDPOINTS = {
+  ADD_UPDATE: BASE_PATH,
+  USER_BY_ID: (id: number | string) => `${BASE_PATH}/${id}`,
+};
+
+// ============================================================================
+// SERVICE
+// ============================================================================
+export const userService = {
+  async getUsers(
+    page: number,
+    limit: number,
+    search: string = '',
+    filter?: string,
+    sortBy?: string,
+    sortOrder?: string
+  ): Promise<PaginatedResponse<User>> {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      ...(search ? { search } : {}),
+      ...(filter ? { filter } : {}),
+      ...(sortOrder ? { sortOrder } : {}),
+      ...(sortBy ? { sortBy } : {}),
+    });
+    const res = await api.get<{
+      success: boolean;
+      message: string;
+      data: PaginatedResponse<User>;
+    }>(`${BASE_PATH}?${params.toString()}`);
+    return res.data.data;
+  },
+
+  async getUser(id: number): Promise<User | undefined> {
+    const res = await api.get<User>(ENDPOINTS.USER_BY_ID(id));
+    return res.data;
+  },
+
+  async createUser(data: UserCreateRequest): Promise<User> {
+    const res = await api.post<User>(ENDPOINTS.ADD_UPDATE, data);
+    return res.data;
+  },
+
+  async updateUser(
+    id: number,
+    data: Partial<UserCreateRequest>
+  ): Promise<User | undefined> {
+    const res = await api.put<User>(ENDPOINTS.USER_BY_ID(id), data);
+    return res.data;
+  },
+
+  async deleteUser(id: string | number): Promise<boolean> {
+    await api.delete<null>(ENDPOINTS.USER_BY_ID(id));
+    return true;
+  },
+};
+```
+
+### Service Structure Guidelines
+- **Constants section**: Define `BASE_PATH` and `ENDPOINTS` object at the top
+- **Types section**: Export service-specific types (request/response types)
+- **Service object**: Export a service object with async methods
+- **Error handling**: Let errors bubble up to be handled by React Query
+- **Return types**: Always return typed data (use `Promise<T>` or `Promise<T | undefined>`)
+
+## Hook Pattern with TanStack Query
+
+Each hook file should follow this structure:
+
+```typescript
+// src/hooks/user.ts
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { UserCreateRequest } from '@/services/user';
+import { userService } from '@/services/user';
+
+// ============================================================================
+// QUERY KEYS
+// ============================================================================
+const USER_QUERY_KEYS = {
+  USERS: 'users',
+  USER: 'user',
+} as const;
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+const USER_CONFIG = {
+  STALE_TIME: 1000 * 60 * 5, // 5 minutes
+  RETRY: {
+    retries: 2,
+    retryDelay: 1000,
+  },
+} as const;
+
+// ============================================================================
+// QUERIES
+// ============================================================================
+export function useUsersQuery(
+  page: number,
+  limit: number,
+  search: string = '',
+  filter?: string,
+  sortBy?: string,
+  sortOrder?: string
+) {
+  return useQuery({
+    queryKey: [
+      USER_QUERY_KEYS.USERS,
+      page,
+      limit,
+      search,
+      filter,
+      sortBy,
+      sortOrder,
+    ],
+    queryFn: () =>
+      userService.getUsers(page, limit, search, filter, sortBy, sortOrder),
+    staleTime: USER_CONFIG.STALE_TIME,
+    retry: USER_CONFIG.RETRY.retries,
+  });
+}
+
+export function useUserQuery(id: number) {
+  return useQuery({
+    queryKey: [USER_QUERY_KEYS.USERS, id],
+    queryFn: () => userService.getUser(id),
+    enabled: !!id,
+    staleTime: USER_CONFIG.STALE_TIME,
+    retry: USER_CONFIG.RETRY.retries,
+  });
+}
+
+// ============================================================================
+// MUTATIONS
+// ============================================================================
+export function useCreateUserMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: UserCreateRequest) => userService.createUser(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEYS.USERS] });
+    },
+  });
+}
+
+export function useUpdateUserMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: Partial<UserCreateRequest>;
+    }) => userService.updateUser(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEYS.USERS] });
+    },
+  });
+}
+
+export function useDeleteUserMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string | number) => userService.deleteUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEYS.USERS] });
+    },
+  });
+}
+```
+
+### Hook Structure Guidelines
+- **Query keys**: Define as constants at the top for consistency
+- **Configuration**: Define stale time, retry config, etc. as constants
+- **Naming**: Use `useXxxQuery` for queries, `useXxxMutation` for mutations
+- **Query invalidation**: Invalidate related queries in `onSuccess` callbacks
+- **Type safety**: Use proper TypeScript types for all parameters and returns
+
+## Error Handling
+
+- **Global error handler**: API client handles 401 errors automatically (clears tokens, redirects)
+- **Error transformation**: Axios errors are transformed to `ApiError` format
+- **Toast notifications**: Show user-friendly error messages using toast service
+- **Loading states**: React Query provides `isLoading`, `isError`, `error` states
+- **Retry logic**: Configure retry in React Query options (default: 3 retries)
+- **Error boundaries**: Use React error boundaries for component-level error handling
+
+## Authentication
+
+- **Token management**: Uses `cookieService` from `@/utils/cookieService` for auth tokens
+- **Automatic headers**: API client automatically adds `Authorization: Bearer <token>` header
+- **Token storage**: Tokens stored in cookies via `cookieService.set('auth_token', { token })`
+- **Token retrieval**: Tokens retrieved via `cookieService.get<{token: string}>('auth_token')`
+- **401 handling**: On 401 response, tokens are cleared and `onUnauthorized` handler is called
+- **Protected routes**: Use middleware or AuthGate component for route protection
+
+## API Response Types
+
+The API client returns `ApiResponse<T>` format:
+```typescript
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message?: string;
+  success?: boolean;
+}
+```
+
+For errors, the API client throws `ApiError`:
+```typescript
+interface ApiError {
+  message: string;
+  code?: string;
+  status?: number;
+  errors?: Record<string, string[]>;
+}
+```
+description:
+globs:
+alwaysApply: false
+---

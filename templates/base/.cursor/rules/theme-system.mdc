@@ -1,0 +1,463 @@
+# Theme System Standards
+
+## Theme Library
+- **next-themes**: Theme management library (v0.4.6)
+- **ThemeProvider**: Wraps the application in `src/app/providers.tsx`
+- **Theme Storage**: Cookies for persistence
+- **Theme Detection**: System preference detection with manual override
+
+## Theme Configuration
+
+### ThemeProvider Setup
+The theme provider is configured in `src/app/providers.tsx`:
+
+```typescript
+import { ThemeProvider } from 'next-themes';
+
+export function Providers({ children }: ProvidersProps) {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system">
+      {children}
+    </ThemeProvider>
+  );
+}
+```
+
+### Theme Application
+Themes are applied via `className` on the `<html>` element in `src/app/layout.tsx`:
+
+```typescript
+const cookieStore = await cookies();
+const theme = cookieStore.get('theme')?.value || 'light';
+const colorScheme = theme === 'dark' ? 'dark' : 'light';
+
+return (
+  <html lang={locale} className={theme} style={{ colorScheme }}>
+    <body>
+      <Providers>{children}</Providers>
+    </body>
+  </html>
+);
+```
+
+## Theme Modes
+
+### Available Themes
+- **light**: Light theme (default)
+- **dark**: Dark theme
+- **system**: Follows system preference (default)
+
+### Theme Classes
+Themes are applied via:
+- `className="light"` on `<html>` element
+- `className="dark"` on `<html>` element
+- `[data-bs-theme="dark"]` attribute (Bootstrap 5.3+)
+
+## Theme-Aware Styling
+
+### Bootstrap CSS Variables (Recommended)
+
+**Always use Bootstrap CSS variables for theme-aware colors:**
+
+```scss
+// ✅ Good - Uses CSS variables that auto-switch with theme
+.component {
+  background: var(--bs-body-bg); // Auto-switches with theme
+  color: var(--bs-body-color); // Auto-switches with theme
+  border: 1px solid var(--bs-border-color); // Auto-switches with theme
+}
+
+// ✅ Good - Uses theme-aware primary color
+.button {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+}
+
+// ✅ Good - Uses RGB values for transparency
+.highlight {
+  background-color: rgba(
+    var(--bs-primary-rgb, 0, 0, 0),
+    0.15
+  );
+}
+```
+
+### Available Bootstrap CSS Variables
+
+**Body Colors:**
+- `var(--bs-body-bg)` - Background color (auto-switches)
+- `var(--bs-body-color)` - Text color (auto-switches)
+- `var(--bs-border-color)` - Border color (auto-switches)
+
+**Theme Colors:**
+- `var(--bs-primary)` - Primary color
+- `var(--bs-secondary)` - Secondary color
+- `var(--bs-success)` - Success color
+- `var(--bs-warning)` - Warning color
+- `var(--bs-danger)` - Danger color
+- `var(--bs-info)` - Info color
+
+**RGB Values (for transparency):**
+- `var(--bs-primary-rgb)` - Primary RGB values
+- `var(--bs-secondary-rgb)` - Secondary RGB values
+
+**Form Controls:**
+- `var(--bs-input-bg)` - Input background
+- `var(--bs-input-color)` - Input text color
+- `var(--bs-input-border-color)` - Input border color
+- `var(--bs-input-focus-border-color)` - Input focus border
+- `var(--bs-form-select-bg)` - Select background
+- `var(--bs-form-select-color)` - Select text color
+
+### SCSS Variables (For Static Values)
+
+Use SCSS variables from `@/assets/scss/_variables.scss` for static values that don't need theme switching:
+
+```scss
+@use "@/assets/scss/variables.scss" as *;
+
+// ✅ Good - Static spacing, typography, etc.
+.component {
+  padding: map-get($spacers, 2);
+  font-size: map-get($font-sizes, md);
+  border-radius: map-get($border-radii, md);
+}
+
+// ❌ Avoid - Don't use SCSS color variables for theme-aware colors
+.component {
+  background-color: $body-bg; // Won't switch with theme
+  color: $body-color; // Won't switch with theme
+}
+```
+
+## Dark Theme Implementation
+
+### Dark Theme Colors
+Dark theme colors are defined in `src/assets/scss/_variables.scss`:
+
+```scss
+$dark-theme-colors: (
+  primary: #8b6fc7, // Lighter purple for dark mode visibility
+  secondary: #94a3b8,
+  success: #34d399,
+  info: #60a5fa,
+  warning: #fbbf24,
+  danger: #f87171,
+  light: #ffffff,
+  dark: #0f172a,
+  text: #e2e8f0, // Softer white for better readability
+  border: #334155, // Subtle dark border
+);
+
+$dark-body-color: #e2e8f0; // Softer white for dark mode
+$dark-body-bg: #0f172a; // Deep slate background
+$dark-secondary-bg: #1e293b; // Slightly lighter for cards/panels
+$dark-tertiary-bg: #1e293b; // Additional subtle background layer
+```
+
+### Dark Theme CSS Variables
+Dark theme CSS variables are automatically generated in `src/assets/scss/colors.scss`:
+
+```scss
+[data-bs-theme="dark"],
+.dark {
+  --bs-body-color: #{$dark-body-color};
+  --bs-body-bg: #{$dark-body-bg};
+  --bs-border-color: #{map-get($dark-theme-colors, border)};
+  
+  // All theme colors are auto-generated
+  @each $name, $value in $dark-theme-colors {
+    --bs-#{$name}: #{$value};
+  }
+}
+```
+
+## Component Styling Patterns
+
+### Theme-Aware Components
+
+**Always use CSS variables for theme-aware styling:**
+
+```scss
+// ComponentName.module.scss
+@use "@/assets/scss/variables.scss" as *;
+
+.component {
+  // Use CSS variables for theme-aware colors
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
+  
+  // Use SCSS variables for static values
+  padding: map-get($spacers, 2);
+  border-radius: map-get($border-radii, md);
+  
+  &:hover {
+    background-color: rgba(
+      var(--bs-primary-rgb, 0, 0, 0),
+      0.1
+    );
+  }
+}
+```
+
+### Example: Theme-Aware Component
+
+```scss
+// Faq/styles.module.scss
+@use "@/assets/scss/variables.scss" as *;
+
+.faq-container {
+  background: var(--bs-body-bg); // Auto-switches with theme
+  color: var(--bs-body-color); // Auto-switches with theme
+  border-radius: map-get($border-radii, lg);
+  padding: map-get($spacers, 2);
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--bs-border-color); // Auto-switches
+  
+  &.active {
+    background-color: rgba(
+      var(--bs-primary-rgb, 0, 0, 0),
+      0.15
+    ); // Uses primary color with transparency
+  }
+  
+  .faqQuestion {
+    color: var(--bs-body-color); // Auto-switches
+    
+    &:hover {
+      color: var(--bs-primary); // Uses theme primary color
+    }
+  }
+}
+```
+
+## Using Theme in Components
+
+### Accessing Theme (if needed)
+
+If you need to access theme in React components (e.g., for theme toggle):
+
+```typescript
+'use client';
+
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+
+const ThemeToggle: React.FC = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch (theme is only available client-side)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // or return a loading state/skeleton
+  }
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  return (
+    <button onClick={toggleTheme}>
+      {theme === 'dark' ? '☀️' : '🌙'} Toggle Theme
+    </button>
+  );
+};
+```
+
+### Theme Toggle Pattern (Current Implementation)
+
+The header component uses this pattern:
+
+```typescript
+// src/components/common/header/header.tsx
+'use client';
+
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+
+const Header: React.FC = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  if (!mounted) {
+    return null; // Prevent hydration mismatch
+  }
+
+  return (
+    <header>
+      <button onClick={toggleTheme}>
+        {theme === 'dark' ? 'Light' : 'Dark'}
+      </button>
+    </header>
+  );
+};
+```
+
+**Important Notes:**
+- Always use `mounted` state to prevent hydration mismatches
+- Theme is only available client-side, so components using `useTheme` must be `'use client'`
+- In most cases, you don't need to access theme in components - CSS variables handle theme switching automatically
+- Only use `useTheme` for theme toggles or conditional logic that can't be handled with CSS
+
+## Best Practices
+
+### ✅ DO
+
+1. **Use Bootstrap CSS variables** for all theme-aware colors
+   ```scss
+   background: var(--bs-body-bg);
+   color: var(--bs-body-color);
+   border-color: var(--bs-border-color);
+   ```
+
+2. **Use SCSS variables** for static values (spacing, typography, etc.)
+   ```scss
+   padding: map-get($spacers, 2);
+   font-size: map-get($font-sizes, md);
+   ```
+
+3. **Use RGB variables** for transparency
+   ```scss
+   background-color: rgba(var(--bs-primary-rgb, 0, 0, 0), 0.15);
+   ```
+
+4. **Test both themes** when developing components
+   - Switch between light and dark themes
+   - Verify all colors are visible and readable
+   - Check contrast ratios meet WCAG standards
+
+### ❌ DON'T
+
+1. **Don't use SCSS color variables** for theme-aware colors
+   ```scss
+   // ❌ Bad - Won't switch with theme
+   background-color: $body-bg;
+   color: $body-color;
+   ```
+
+2. **Don't hardcode colors** that should be theme-aware
+   ```scss
+   // ❌ Bad - Hardcoded colors
+   background-color: #ffffff;
+   color: #000000;
+   ```
+
+3. **Don't use inline styles** for theme-aware colors
+   ```typescript
+   // ❌ Bad - Inline styles don't respect theme
+   <div style={{ backgroundColor: '#ffffff' }} />
+   ```
+
+4. **Don't create custom theme classes** unless necessary
+   - Bootstrap CSS variables handle most cases
+   - Only create custom classes for complex theme logic
+
+## Theme Testing
+
+### Manual Testing Checklist
+1. ✅ Switch between light and dark themes using theme toggle
+2. ✅ Verify all components render correctly in both themes
+3. ✅ Check color contrast meets accessibility standards (WCAG AA: 4.5:1)
+4. ✅ Test with system theme preference (auto-detect)
+5. ✅ Verify form controls are visible and usable in both themes
+6. ✅ Check borders and dividers are visible in both themes
+7. ✅ Verify hover and focus states work in both themes
+8. ✅ Test modals, dropdowns, and overlays in both themes
+
+### Accessibility
+- **Color contrast**: Ensure sufficient contrast in both themes (WCAG AA: 4.5:1 for normal text)
+- **Focus indicators**: Visible and clear in both themes
+- **Text readability**: All text should be readable in both themes
+- **Interactive elements**: Buttons, links, and form controls must be clearly visible
+
+### Component Review Checklist
+
+When creating or updating components, verify:
+
+- [ ] All background colors use `var(--bs-body-bg)` or theme-aware variables
+- [ ] All text colors use `var(--bs-body-color)` or theme-aware variables
+- [ ] All borders use `var(--bs-border-color)` or theme-aware variables
+- [ ] No hardcoded colors (`#ffffff`, `#000000`, `white`, `black`) for theme-aware elements
+- [ ] No SCSS color variables (`$body-bg`, `$body-color`, `map-get($theme-colors, *)`) for theme-aware colors
+- [ ] Component tested in both light and dark themes
+- [ ] All interactive states (hover, focus, active) work in both themes
+- [ ] Form controls use theme-aware variables (`var(--bs-input-bg)`, etc.)
+
+## Theme File Structure
+
+```
+src/assets/scss/
+├── _variables.scss      # SCSS variables (colors, spacing, typography)
+├── colors.scss          # CSS variables for theme switching
+├── bootstrap-custom.scss # Bootstrap customization
+├── global.scss          # Global styles
+├── admin.scss           # Admin-specific styles
+└── main.scss            # Main entry point
+```
+
+## Summary
+
+### Critical Rules
+
+1. ✅ **ALWAYS use Bootstrap CSS variables** (`var(--bs-*)`) for theme-aware colors
+   - `var(--bs-body-bg)`, `var(--bs-body-color)`, `var(--bs-border-color)` for backgrounds/text
+   - `var(--bs-primary)`, `var(--bs-secondary)`, etc. for theme colors
+   - `var(--bs-input-bg)`, `var(--bs-input-color)` for form controls
+
+2. ✅ **Use SCSS variables** (`map-get($spacers, *)`) for static values
+   - Spacing: `map-get($spacers, 2)`
+   - Typography: `map-get($font-sizes, md)`
+   - Border radius: `map-get($border-radii, md)`
+
+3. ✅ **Test in both themes** during development
+   - Switch between light and dark themes
+   - Verify all colors are visible and readable
+   - Check contrast ratios meet WCAG standards
+
+4. ✅ **Follow accessibility guidelines** for color contrast
+   - WCAG AA: 4.5:1 for normal text
+   - Ensure focus indicators are visible in both themes
+
+5. ❌ **NEVER hardcode colors** that should be theme-aware
+   - Don't use: `#ffffff`, `#000000`, `white`, `black` for backgrounds/text
+
+6. ❌ **NEVER use SCSS color variables** for theme switching
+   - Don't use: `$body-bg`, `$body-color`, `map-get($theme-colors, light)`
+   - These are compile-time values and won't switch with theme
+
+### Quick Reference
+
+```scss
+// ✅ Theme-aware (auto-switches)
+background: var(--bs-body-bg);
+color: var(--bs-body-color);
+border-color: var(--bs-border-color);
+
+// ✅ Static values (don't need theme switching)
+padding: map-get($spacers, 2);
+font-size: map-get($font-sizes, md);
+
+// ❌ NOT theme-aware (won't switch)
+background-color: $body-bg;
+color: $body-color;
+background-color: map-get($theme-colors, light);
+```
+description:
+globs:
+alwaysApply: false
+---

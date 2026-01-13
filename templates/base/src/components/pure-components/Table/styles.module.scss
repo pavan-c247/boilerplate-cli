@@ -1,0 +1,90 @@
+@use "sass:map";
+@use "@/assets/scss/variables" as *;
+
+.tableContainer {
+  position: relative;
+  .stickyHeader {
+    th {
+      border-top: 1px solid var(--bs-border-color) !important; // Stronger border for header
+    }
+    &:first-child {
+      border-top-left-radius: map.get($border-radii, md);
+    }
+    &:last-child {
+      border-top-right-radius: map.get($border-radii, md);
+    }
+  }
+  .stickyHeader,
+  .stickyHeader .fixedLeft {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+  }
+  .fixedLeft {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  .fixedRight {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    box-shadow: -2px 0 5px -2px rgba(0, 0, 0, 0.1);
+  }
+  .hoverRow {
+   cursor: pointer;
+  }
+  tbody {
+    tr {
+      &:nth-of-type(odd) td {
+        background-color: $ghost-white; // Theme-aware striped background
+      }
+      --bs-table-bg-state: transparent !important;
+      &:hover td {
+        background-color: var(--bs-tertiary-bg) !important; // Theme-aware hover background
+      }
+
+      td:first-child {
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+      }
+
+      td:last-child {
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+      }
+    }
+  }
+  tbody > tr:hover > * {
+    --bs-table-bg-state: transparent !important;
+  }
+  .expandedColumn {
+    td {
+      background-color: var(--bs-ghost-white) !important;
+    }
+  }
+  .svgIcon {
+    &:active {
+      border-color: transparent;
+    }
+  }
+  .accordianRow {
+    border-spacing: map.get($spacers, 2) 0;
+    .accordianCollapse {
+      border: 1px solid var(--bs-border-color);
+      border-top: none;
+      .tableContainer {
+        margin-top: map.get($spacers, 4);
+        thead {
+          th {
+            background-color: var(--bs-body-bg) !important;
+            border-top: none;
+          }
+        }
+      }
+    }
+  }
+}

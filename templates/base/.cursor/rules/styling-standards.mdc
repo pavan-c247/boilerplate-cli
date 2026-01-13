@@ -1,0 +1,479 @@
+# Styling Standards
+
+## SCSS Module Structure
+
+### File Naming
+- **Component styles**: Use `ComponentName.module.scss` for component-specific styles
+- **Global styles**: Place in `src/assets/scss/` (e.g., `global.scss`, `variables.scss`)
+- **Import in component**: `import styles from './styles.module.scss'`
+
+### Class Naming
+- **camelCase**: Use camelCase for class names (e.g., `button`, `iconButton`, `block`)
+- **Component prefix**: Not required, but can be used for clarity
+- **BEM alternative**: Can use BEM-like naming if preferred (e.g., `button--primary`)
+
+## SCSS File Structure
+
+### Component SCSS Module
+```scss
+// Button/styles.module.scss
+@use "./global.scss" as *;
+@use "@/assets/scss/variables" as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: map-get($font-sizes, md);
+  font-weight: map-get($font-weights, medium);
+  line-height: 1.5;
+  cursor: pointer;
+  user-select: none;
+  border-radius: map-get($border-radii, md);
+  transition: all 0.15s ease-in-out;
+  gap: map-get($spacers, 1);
+
+  // State styles
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem
+      color-mix(in srgb, var(--bs-primary) 35%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  // Variant styles (if using data attributes or classes)
+  &.primary {
+    background: var(--bs-primary);
+    color: #fff;
+  }
+
+  &.secondary {
+    background: var(--bs-secondary);
+    color: #fff;
+  }
+
+  // Size styles
+  &.small {
+    padding: 0.25rem 0.5rem;
+    font-size: map-get($font-sizes, sm);
+  }
+
+  &.large {
+    padding: 0.75rem 1.5rem;
+    font-size: map-get($font-sizes, lg);
+  }
+
+  // Modifier classes
+  &.block {
+    width: 100%;
+    display: flex;
+  }
+
+  &.iconButton {
+    padding: 0.5rem;
+    border-radius: 50%;
+  }
+
+  // Responsive styles
+  @media (max-width: 768px) {
+    font-size: map-get($font-sizes, sm);
+    padding: 0.375rem 0.75rem;
+  }
+}
+```
+
+### Global SCSS Variables
+
+Global variables are defined in `src/assets/scss/_variables.scss`:
+
+```scss
+// src/assets/scss/_variables.scss
+// Font sizes
+$font-sizes: (
+  xs: 0.75rem,
+  sm: 0.875rem,
+  md: 1rem,
+  lg: 1.125rem,
+  xl: 1.25rem,
+);
+
+// Font weights
+$font-weights: (
+  light: 300,
+  normal: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+);
+
+// Spacing
+$spacers: (
+  0: 0,
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 1rem,
+  4: 1.5rem,
+  5: 3rem,
+);
+
+// Border radius
+$border-radii: (
+  sm: 0.25rem,
+  md: 0.375rem,
+  lg: 0.5rem,
+  xl: 1rem,
+  round: 50%,
+);
+```
+
+## Bootstrap Integration
+
+### CSS Variables
+Bootstrap 5 provides CSS variables that can be used:
+
+```scss
+.button {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+  border-color: var(--bs-primary);
+  
+  &:hover {
+    background-color: var(--bs-primary-dark);
+  }
+}
+```
+
+### Utility Classes
+Use Bootstrap utility classes in JSX when appropriate:
+
+```typescript
+<div className="d-flex justify-content-between align-items-center mb-3">
+  <h2 className="mb-0">Title</h2>
+  <Button variant="primary">Action</Button>
+</div>
+```
+
+### React Bootstrap Components
+Leverage React Bootstrap components and extend with custom styles:
+
+```typescript
+import { Button as BootstrapButton } from 'react-bootstrap';
+import styles from './Button.module.scss';
+
+<BootstrapButton
+  variant="primary"
+  className={styles.button}
+>
+  Click me
+</BootstrapButton>
+```
+
+## SCSS Module Usage in Components
+
+```typescript
+import React from 'react';
+import styles from './Button.module.scss';
+import classnames from 'classnames';
+
+const Button: React.FC<ButtonProps> = ({ variant, className, children }) => {
+  const buttonClasses = classnames(
+    styles.button,
+    variant && styles[variant],
+    className
+  );
+
+  return (
+    <button className={buttonClasses}>
+      {children}
+    </button>
+  );
+};
+```
+
+## Theme-Aware Styling
+
+### Using Bootstrap CSS Variables
+
+**Always use Bootstrap CSS variables for theme-aware colors:**
+
+```scss
+// ComponentName.module.scss
+@use "@/assets/scss/variables.scss" as *;
+
+.component {
+  // ✅ Use CSS variables for theme-aware colors
+  background: var(--bs-body-bg); // Auto-switches with theme
+  color: var(--bs-body-color); // Auto-switches with theme
+  border: 1px solid var(--bs-border-color); // Auto-switches with theme
+  
+  // ✅ Use SCSS variables for static values
+  padding: map-get($spacers, 2);
+  border-radius: map-get($border-radii, md);
+  
+  &:hover {
+    background-color: rgba(
+      var(--bs-primary-rgb, 0, 0, 0),
+      0.1
+    ); // Uses primary color with transparency
+  }
+}
+```
+
+### Theme-Aware Color Variables
+
+**Available Bootstrap CSS variables:**
+- `var(--bs-body-bg)` - Background color (auto-switches)
+- `var(--bs-body-color)` - Text color (auto-switches)
+- `var(--bs-border-color)` - Border color (auto-switches)
+- `var(--bs-primary)` - Primary color
+- `var(--bs-secondary)` - Secondary color
+- `var(--bs-success)`, `var(--bs-warning)`, `var(--bs-danger)`, `var(--bs-info)`
+- `var(--bs-primary-rgb)` - RGB values for transparency
+
+**See [theme-system.mdc](mdc:.cursor/rules/theme-system.mdc) for complete theme system documentation.**
+
+## Responsive Design
+
+### Mobile-First Approach
+Start with mobile styles, then add desktop styles:
+
+```scss
+.component {
+  // Mobile styles (default)
+  padding: 1rem;
+  font-size: 0.875rem;
+
+  // Tablet and up
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+    font-size: 1rem;
+  }
+
+  // Desktop and up
+  @media (min-width: 992px) {
+    padding: 2rem;
+    font-size: 1.125rem;
+  }
+}
+```
+
+### Bootstrap Breakpoints
+Use Bootstrap breakpoints for consistency:
+
+```scss
+// Bootstrap breakpoints
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+
+// Usage
+@media (min-width: map-get($grid-breakpoints, md)) {
+  // Styles for md and up
+}
+```
+
+## Global Styles
+
+Global styles are in `src/assets/scss/`:
+
+- **`_variables.scss`**: SCSS variables (colors, spacing, typography)
+- **`mixins.scss`**: Reusable SCSS mixins
+- **`global.scss`**: Global styles and resets
+- **`admin.scss`**: Admin-specific global styles
+- **`bootstrap-custom.scss`**: Bootstrap customizations
+- **`colors.scss`**: Color definitions
+- **`main.scss`**: Main SCSS entry point
+
+Import global variables in component SCSS:
+
+```scss
+@use "./global.scss" as *;
+@use "@/assets/scss/variables" as *;
+```
+
+## Accessibility
+
+### Color Contrast
+- **Text**: Ensure sufficient contrast (WCAG AA: 4.5:1 for normal text)
+- **Interactive elements**: Clear visual feedback on hover/focus
+
+### Focus Indicators
+```scss
+.button {
+  &:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem
+      color-mix(in srgb, var(--bs-primary) 35%, transparent);
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+  }
+}
+```
+
+### Reduced Motion
+```scss
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+## Performance Best Practices
+
+- **CSS Modules**: Use for component-scoped styles (prevents style conflicts)
+- **Avoid inline styles**: Use CSS modules or utility classes instead
+- **Minimize specificity**: Keep selectors simple and specific
+- **Use CSS variables**: For theming and dynamic values
+- **Optimize imports**: Only import what you need from global SCSS files
+
+## Class Name Utilities
+
+Use `classnames` or `clsx` for conditional class names:
+
+```typescript
+import classnames from 'classnames';
+
+const buttonClasses = classnames(
+  styles.button,
+  {
+    [styles.primary]: variant === 'primary',
+    [styles.disabled]: disabled,
+    [styles.loading]: loading,
+  },
+  className
+);
+```
+
+## SCSS Best Practices
+
+1. ✅ Use SCSS modules for component styles
+2. ✅ Import global variables using `@use`
+3. ✅ Use camelCase for class names
+4. ✅ **CRITICAL: Use Bootstrap CSS variables** (`var(--bs-*)`) for ALL theme-aware colors
+5. ✅ **Use SCSS variables** (`map-get($spacers, *)`) for static values (spacing, typography, border-radius)
+6. ✅ Use mobile-first responsive design
+7. ✅ Keep selectors simple and specific
+8. ✅ **Always test components in both light and dark themes**
+9. ✅ Ensure proper focus states for accessibility
+10. ✅ Use `classnames` for conditional classes
+11. ✅ Organize styles logically (base → states → variants → responsive)
+12. ✅ Use RGB variables for transparency: `rgba(var(--bs-primary-rgb, 0, 0, 0), 0.15)`
+
+## Theme System Integration
+
+The application uses `next-themes` for theme management with Bootstrap CSS variables for theme-aware styling. See [theme-system.mdc](mdc:.cursor/rules/theme-system.mdc) for complete documentation.
+
+### Critical Theme Rules
+
+**✅ DO - Use CSS Variables for Theme-Aware Colors:**
+```scss
+// Backgrounds and text
+background: var(--bs-body-bg);
+color: var(--bs-body-color);
+border-color: var(--bs-border-color);
+
+// Theme colors
+background-color: var(--bs-primary);
+color: var(--bs-white);
+border-color: var(--bs-border-color);
+
+// Form controls
+background-color: var(--bs-input-bg);
+color: var(--bs-input-color);
+border-color: var(--bs-input-border-color);
+```
+
+**❌ DON'T - Use SCSS Variables for Theme Colors:**
+```scss
+// ❌ These won't switch with theme
+background-color: $body-bg;
+color: $body-color;
+background-color: map-get($theme-colors, light);
+color: $body-color;
+```
+
+**✅ DO - Use SCSS Variables for Static Values:**
+```scss
+// Spacing, typography, border-radius (these don't need theme switching)
+padding: map-get($spacers, 2);
+font-size: map-get($font-sizes, md);
+border-radius: map-get($border-radii, md);
+```
+
+### Common Theme-Aware Patterns
+
+```scss
+// Component with theme-aware styling
+.component {
+  // Theme-aware colors
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
+  
+  // Static values
+  padding: map-get($spacers, 2);
+  border-radius: map-get($border-radii, md);
+  
+  // Hover with transparency
+  &:hover {
+    background-color: rgba(
+      var(--bs-primary-rgb, 0, 0, 0),
+      0.1
+    );
+  }
+  
+  // Active state
+  &.active {
+    background-color: rgba(
+      var(--bs-primary-rgb, 0, 0, 0),
+      0.15
+    );
+    color: var(--bs-primary);
+  }
+}
+```
+
+### Migration Guide
+
+If you find components using SCSS variables for theme colors, migrate them:
+
+```scss
+// ❌ Before (not theme-aware)
+.component {
+  background-color: $body-bg;
+  color: $body-color;
+  background-color: map-get($theme-colors, light);
+}
+
+// ✅ After (theme-aware)
+.component {
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+}
+```
+description:
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,193 @@
+# Project Structure Guide
+
+This is a Next.js 15 React admin dashboard project with TypeScript. The main entry point is [src/app/layout.tsx](mdc:src/app/layout.tsx), which uses the app router structure.
+
+## Key Directories
+
+### Core Application Structure
+- **src/app/**: Next.js app router pages and layouts
+  - `(auth)/`: Authentication pages (login, signup, forgot-password, reset-password)
+  - `(view)/`: Main application pages (dashboard, users, cms, faq, documents, profile)
+  - `(web)/`: Public web pages (terms, etc.)
+  - `api/`: API routes
+  - `layout.tsx`: Root layout
+  - `providers.tsx`: Global providers (React Query, i18n, etc.)
+
+### Components Organization
+- **src/components/pure-components/**: Reusable UI components (Button, Input, Table, Modal, etc.)
+  - Each component has its own folder with component file, styles, stories, and index
+  - Example: `Button/Button.tsx`, `Button/styles.module.scss`, `Button/Button.stories.tsx`, `Button/index.tsx`
+- **src/components/common/**: Shared layout and feature components
+  - `header/`: Top navigation header
+  - `sidebar/`: Main navigation sidebar
+  - `layout/`: Dashboard layout wrapper
+  - `filter/`: Filter components
+  - `search/`: Search components
+  - `toast/`: Toast notifications
+- **src/components/pages/**: Page-specific components
+  - `users/`: User management components
+  - `cms/`: CMS page components
+  - `faq/`: FAQ components
+  - `documents/`: Document management components
+  - `dashboard/`: Dashboard components
+- **src/components/auth/**: Authentication-specific components
+- **src/components/web/**: Public web components
+
+### Business Logic
+- **src/hooks/**: Custom React hooks for business logic
+  - Domain-specific hooks (e.g., `user.ts`, `cms.ts`, `faq.ts`)
+  - Utility hooks (e.g., `usePagination.ts`, `useSearch.ts`, `useUrlFilters.tsx`)
+- **src/services/**: API service layer for backend communication
+  - One service file per domain (e.g., `user.ts`, `cms.ts`, `auth.ts`)
+  - Each service exports a service object with async methods
+
+### Utilities & Configuration
+- **src/utils/**: Utility functions and helpers
+  - `api.ts`: Centralized API client (axios instance)
+  - `cookieService.ts`: Cookie management
+  - `form.ts`: Form utilities
+  - `table.ts`: Table utilities
+  - `formatDate.ts`: Date formatting
+- **src/constants/**: Application constants and configuration
+  - `validation.ts`: Validation rules and messages (for inline validation)
+  - `regex.ts`: Regular expressions
+  - `index.ts`: General constants
+- **src/schemas/**: Zod validation schemas (organized by domain)
+  - `userSchema.ts`: User form validation schemas
+  - `authSchema.ts`: Authentication validation schemas
+  - `cmsSchema.ts`: CMS form validation schemas
+  - `index.ts`: Re-exports all schemas
+- **src/types/**: TypeScript type definitions
+  - Domain-specific types (e.g., `auth.ts`, `user.ts`, `cms.ts`, `documents.ts`)
+  - Shared types (e.g., `ui.ts`, `table.ts`, `filters.ts`, `search.ts`)
+  - `index.ts`: Re-exports all types
+- **src/assets/**: Static assets
+  - `scss/`: Global SCSS files (variables, mixins, global styles)
+  - `images/`: Image assets
+
+### Internationalization
+- **locales/**: Internationalization files using next-intl
+  - `en/`: English translations organized by feature
+    - `auth/`: Authentication translations
+    - `users/`: User management translations
+    - `cms/`: CMS translations
+    - `common/`: Common UI translations
+    - `dashboard/`: Dashboard translations
+    - `faq/`: FAQ translations
+    - `header/`: Header translations
+    - `sidebar/`: Sidebar translations
+  - `index.ts`: Locale configuration
+
+### Configuration Files
+- **.storybook/**: Storybook configuration
+- **.husky/**: Git hooks (pre-commit, commit-msg)
+- **.github/**: GitHub workflows and templates
+
+## Custom Types & Interfaces Organization
+
+### Type Organization Rules
+- **Centralized types**: Place all shared types and interfaces in `src/types/`, subdivided by domain if needed (e.g. `auth.ts`, `ui.ts`, `cms.ts`).
+- **Component/feature types**: If a type/interface is only used by a single component or feature, define it in a `types.ts` file within that folder. If it becomes shared, move it to `src/types/`.
+- **Service types**: Types specific to a service can be defined in the service file itself (e.g., `PaginatedResponse`, `UserCreateRequest` in `user.ts`), but shared types should be in `src/types/`.
+- **Naming**: Use `PascalCase` for interfaces/types. Suffix props interfaces with `Props` (e.g. `UserCardProps`, `ButtonProps`).
+- **Imports**: Always import types/interfaces from the central types directory or local `types.ts`, not from implementation files.
+- **No implementation in types files**: Types/interfaces files should only contain type definitions, not functions or classes.
+
+**Example Structure:**
+```
+src/
+  types/
+    auth.ts          # Authentication types
+    user.ts          # User domain types
+    cms.ts           # CMS domain types
+    ui.ts            # UI component types
+    table.ts         # Table-related types
+    filters.ts       # Filter types
+    index.ts         # Re-exports all types
+  components/
+    UserCard/
+      UserCard.tsx
+      types.ts       # Component-specific types (if not shared)
+  services/
+    user.ts          # Service-specific types (PaginatedResponse, UserCreateRequest)
+```
+
+**Why?**
+- Discoverability: Developers can easily find and reuse types.
+- Maintainability: Changes to types/interfaces are centralized.
+- Scalability: As your app grows, type management remains organized.
+
+## Technology Stack
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript (strict mode enabled)
+- **UI Libraries**: React Bootstrap, Ant Design, Radix UI
+- **State Management**: TanStack Query (React Query) for server state
+- **Styling**: SCSS modules with Bootstrap 5
+- **Theme System**: next-themes with Bootstrap CSS variables
+- **Forms**: React Hook Form with inline validation (Zod optional)
+- **Internationalization**: next-intl
+- **Testing**: Storybook, Vitest, Playwright
+- **Build Tool**: Turbopack (via `next dev --turbopack`)
+
+## Path Aliases
+
+Configured in `tsconfig.json`:
+- `@/*` → `src/*` (primary alias for src directory)
+- `@components/*` → `src/components/*`
+- `@constants/*` → `src/constants/*`
+- `@types/*` → `src/types/*`
+- `@assets/*` → `src/assets/*`
+- `@pages/*` → `src/pages/*`
+- `@public/*` → `public/*`
+- `@locales` → `locales`
+- `@locales/*` → `locales/*`
+
+**Always use absolute imports from `@/` instead of relative paths.**
+
+Example:
+```typescript
+// ✅ Good
+import { Button } from '@/components/pure-components/Button';
+import { userService } from '@/services/user';
+import type { User } from '@/types/user';
+
+// ❌ Bad
+import { Button } from '../../../components/pure-components/Button';
+```
+
+## File Naming Conventions
+- **Components**: PascalCase (e.g., `UserForm.tsx`, `Button.tsx`)
+- **Hooks**: camelCase with `use` prefix (e.g., `useUsersQuery.ts`, `usePagination.ts`)
+- **Services**: camelCase (e.g., `userService.ts`, `cmsService.ts`)
+- **Utils**: camelCase (e.g., `api.ts`, `cookieService.ts`)
+- **Types**: camelCase (e.g., `user.ts`, `auth.ts`)
+- **Styles**: `ComponentName.module.scss` (e.g., `Button.module.scss`)
+- **Stories**: `ComponentName.stories.tsx` (e.g., `Button.stories.tsx`)
+
+## Key Rules Files
+
+This project has comprehensive coding standards documented in `.cursor/rules/`:
+
+- **[project-structure.mdc](mdc:.cursor/rules/project-structure.mdc)**: Project organization and structure
+- **[component-architecture.mdc](mdc:.cursor/rules/component-architecture.mdc)**: Component patterns and organization
+- **[api-integration.mdc](mdc:.cursor/rules/api-integration.mdc)**: API service and React Query patterns
+- **[form-handling.mdc](mdc:.cursor/rules/form-handling.mdc)**: Form validation and React Hook Form patterns
+- **[styling-standards.mdc](mdc:.cursor/rules/styling-standards.mdc)**: SCSS and styling patterns
+- **[theme-system.mdc](mdc:.cursor/rules/theme-system.mdc)**: **Theme system and dark mode patterns (CRITICAL for theme-aware styling)**
+- **[typescript-standards.mdc](mdc:.cursor/rules/typescript-standards.mdc)**: TypeScript best practices
+- **[internationalization.mdc](mdc:.cursor/rules/internationalization.mdc)**: i18n patterns with next-intl
+- **[testing-standards.mdc](mdc:.cursor/rules/testing-standards.mdc)**: Testing patterns with Storybook and Vitest
+
+## Theme System Quick Reference
+
+**CRITICAL**: Always use Bootstrap CSS variables for theme-aware colors:
+- ✅ `var(--bs-body-bg)`, `var(--bs-body-color)`, `var(--bs-border-color)` for theme-aware colors
+- ✅ `var(--bs-primary)`, `var(--bs-secondary)`, etc. for theme colors
+- ✅ `map-get($spacers, *)` for static spacing values
+- ❌ **Never use** `$body-bg`, `$body-color`, `map-get($theme-colors, *)` for theme-aware colors
+
+See [theme-system.mdc](mdc:.cursor/rules/theme-system.mdc) for complete documentation.
+description:
+globs:
+alwaysApply: false
+---

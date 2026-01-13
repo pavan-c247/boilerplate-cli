@@ -1,0 +1,54 @@
+name: AI Code Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-review-be-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  code_review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Comprehensive AI Code Review
+        uses: Chapter247IND/code-review-ai-agent@v1.0
+        with:
+          primary_model: "gemini/gemini-2.5-flash"
+          primary_api_key: ${{ secrets.GEMINI_API_KEY }}
+          files_per_batch: "8"
+          custom_instructions: |
+            # Scope
+            - Do NOT repeat ESLint/Sonar findings; report only higher-level or cross-file risks.
+            - Review only changed lines and the enclosing function/block.
+            - Ignore assets/build/minified/generated: **/dist/**, **/.next/**, **/out/**, **/build/**, **/public/**, **/*.map, **/*.min.*, **/*.lock, **/coverage/**, **/__snapshots__/**
+
+            # Output (strict & short)
+            - **PR Overview** (1 line)
+            - Up to **5 Findings max**. Each finding must include:
+              - **Severity**: Blocker | Major | Minor
+              - **Category**: SECURITY | PERFORMANCE | CODE_STANDARD
+              - **File:Line(s)**, **Why**, **Fix** (1–3 lines). Prefer a minimal unified diff if helpful.
+            - **Tests** (0–3 bullets)
+            - **Summary** (1–2 lines) ending with:
+              **Focus:** SECURITY | PERFORMANCE | CODE_STANDARD (pick exactly one + 1-line reason)
+
+            # Frontend priorities (in order)
+            1) SECURITY: XSS (dangerouslySetInnerHTML, unescaped HTML), unsafe URL use, missing sanitization on user input, auth flows on client.
+            2) PERFORMANCE: unnecessary re-renders, heavy effects, missing memoization, large bundle adds, missing route-level code-splitting, expensive list rendering (keys/virtualization), oversized payloads.
+            3) CODE_STANDARD: unstable effect deps, stale closures, improper keys, a11y basics (labels/roles/tab order), clear error boundaries.
+
+            # Evidence & restraint
+            - Quote ≤3 lines of the exact code that justifies a finding.
+            - Skip low-confidence/speculative notes.
+            - Prefer one precise fix over many options.
+
+            # Summary rule
+            - Choose **Focus** by highest severity + breadth of impact across findings.

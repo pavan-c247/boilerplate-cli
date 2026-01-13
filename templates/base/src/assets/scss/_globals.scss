@@ -1,0 +1,11 @@
+// If you use map.get in component scss, keep this
+@use "sass:map";
+
+// Bootstrap (order matters)
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+
+// Your tokens (import, not use)
+@import "@/assets/scss/variables";

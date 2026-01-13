@@ -1,0 +1,263 @@
+@use "sass:map";
+@use "@/assets/scss/variables" as *;
+
+.documentsContainer {
+  padding: 0;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: map.get($spacers, 4);
+
+    .headerActions {
+      display: flex;
+      gap: map.get($spacers, 3);
+      align-items: center;
+    }
+  }
+
+  .searchSection {
+    margin-bottom: map.get($spacers, 5);
+
+    .searchBar {
+      position: relative;
+      max-width: 25rem;
+
+      .searchIcon {
+        position: absolute;
+        left: map.get($spacers, 3);
+        top: 50%;
+        transform: translateY(-50%);
+        color: $secondary;
+        z-index: 1;
+      }
+
+      .searchInput {
+        width: 100%;
+        padding: map.get($spacers, 3) map.get($spacers, 4) map.get($spacers, 3)
+          map.get($spacers, 6);
+        border: 1px solid $border-color;
+        border-radius: map.get($border-radii, md);
+        font-size: map.get($font-sizes, sm);
+        background-color: $light;
+        color: $body-color;
+        transition: all 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          background-color: $body-bg;
+          box-shadow: 0 0 0 0.25rem rgba($primary, 0.25);
+        }
+
+        &::placeholder {
+          color: $secondary;
+        }
+      }
+    }
+  }
+
+  .documentsGrid {
+    min-height: 25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .emptyState {
+      text-align: center;
+      padding: map.get($spacers, 6) map.get($spacers, 5);
+      color: $secondary;
+
+      .emptyIcon {
+        color: $light;
+        margin-bottom: map.get($spacers, 4);
+      }
+
+      h3 {
+        color: $light;
+        margin-bottom: map.get($spacers, 2);
+        font-size: map.get($font-sizes, lg);
+        font-weight: map.get($font-weights, semibold);
+      }
+
+      p {
+        margin-bottom: map.get($spacers, 5);
+        font-size: map.get($font-sizes, sm);
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .documentsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: map.get($spacers, 4);
+
+    .documentCard {
+      border: 1px solid $border-color;
+      border-radius: map.get($border-radii, lg);
+      padding: map.get($spacers, 4);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+
+      &:hover {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.25rem rgba($primary, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .documentIcon {
+        margin-bottom: map.get($spacers, 3);
+
+        .fileEmoji {
+          font-size: 2rem;
+          display: block;
+        }
+      }
+
+      .documentContent {
+        flex: 1;
+        margin-bottom: map.get($spacers, 3);
+
+        .documentTitle {
+          font-size: map.get($font-sizes, md);
+          font-weight: map.get($font-weights, semibold);
+          margin-bottom: map.get($spacers, 2);
+          word-break: break-word;
+        }
+
+        .documentDescription {
+          font-size: map.get($font-sizes, sm);
+          margin-bottom: map.get($spacers, 3);
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .documentMeta {
+          display: flex;
+          flex-direction: column;
+          gap: map.get($spacers, 1);
+          font-size: map.get($font-sizes, xs);
+          
+
+          .fileSize {
+            font-weight: map.get($font-weights, medium);
+          }
+
+          .uploadDate {
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+
+      .documentActions {
+        display: flex;
+        gap: map.get($spacers, 2);
+        button {
+          flex: 1;
+          padding: map.get($spacers, 2) map.get($spacers, 3);
+          font-size: map.get($font-sizes, sm);
+          color: var(--bs-white);
+        }
+      }
+    }
+  }
+
+  .errorMessage {
+    text-align: center;
+    padding: map.get($spacers, 5);
+    color: $danger;
+    background-color: rgba($danger, 0.1);
+    border: 1px solid rgba($danger, 0.3);
+    border-radius: map.get($border-radii, md);
+    margin-bottom: map.get($spacers, 5);
+
+    p {
+      margin-bottom: map.get($spacers, 3);
+      font-weight: map.get($font-weights, medium);
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: map.get($spacers, 4);
+    margin-top: map.get($spacers, 5);
+    padding-top: map.get($spacers, 5);
+    border-top: 1px solid $border-color;
+
+    .pageInfo {
+      font-size: map.get($font-sizes, sm);
+      color: $secondary;
+      font-weight: map.get($font-weights, medium);
+    }
+  }
+
+  .toast {
+    position: fixed;
+    top: map.get($spacers, 4);
+    right: map.get($spacers, 4);
+    padding: map.get($spacers, 3) map.get($spacers, 4);
+    border-radius: map.get($border-radii, md);
+    font-size: map.get($font-sizes, sm);
+    font-weight: map.get($font-weights, medium);
+    z-index: 1000;
+    box-shadow: 0 0 0 0.25rem rgba($primary, 0.25);
+    animation: slideIn 0.3s ease;
+
+    &.success {
+      background-color: rgba($success, 0.15);
+      color: $success;
+      border: 1px solid rgba($success, 0.3);
+    }
+
+    &.error {
+      background-color: rgba($danger, 0.15);
+      color: $danger;
+      border: 1px solid rgba($danger, 0.3);
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: map.get($breakpoints, md)) {
+  .documentsContainer {
+    .header {
+      flex-direction: column;
+      gap: map.get($spacers, 3);
+      align-items: stretch;
+
+      .headerActions {
+        justify-content: center;
+      }
+    }
+
+    .searchSection {
+      .searchBar {
+        max-width: 100%;
+      }
+    }
+
+    .documentsList {
+      grid-template-columns: 1fr;
+    }
+  }
+}

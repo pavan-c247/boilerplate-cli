@@ -1,0 +1,909 @@
+# Form Handling Patterns
+
+## Form Libraries
+- **React Hook Form**: Primary form library for state management (v7.51.0)
+- **React Bootstrap Form**: Form components from react-bootstrap
+- **Custom Form Components**: `@/components/pure-components/Form` (FormGroup, FormLabel, etc.)
+- **Zod**: Schema validation library (optional, for future use with `@hookform/resolvers`)
+
+**Current Implementation**: The codebase uses inline validation with React Hook Form's `register()` function. Zod can be added for schema-based validation in the future.
+
+## Form Component Pattern
+
+Forms use React Hook Form with inline validation and custom form components:
+
+### Standard Form Pattern (Current Implementation)
+```typescript
+import React from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { Button, Form } from 'react-bootstrap';
+import Input from '@/components/pure-components/Form/Input';
+import { useTranslations } from 'next-intl';
+import { EMAIL_REGEX } from '@/constants/regex';
+
+// Define form values interface
+export interface UserFormValues {
+  name: string;
+  email: string;
+  status: number;
+}
+
+interface UserFormProps {
+  defaultValues?: Partial<UserFormValues>;
+  onSubmit: SubmitHandler<UserFormValues>;
+  onCancel?: () => void;
+}
+
+const UserForm: React.FC<UserFormProps> = ({
+  defaultValues,
+  onSubmit,
+  onCancel,
+}) => {
+  const t = useTranslations('users');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<UserFormValues>({
+    defaultValues: defaultValues || {
+      name: '',
+      email: '',
+      status: 0,
+    },
+    // Optional: mode for validation timing
+    // mode: 'onChange', // Validate on change
+    // mode: 'onBlur',   // Validate on blur (default)
+  });
+
+  return (
+    <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form.Group className="mb-3">
+        <Form.Label>{t('name')}</Form.Label>
+        <Input
+          {...register('name', { required: t('form.nameRequired') })}
+          isInvalid={!!errors.name}
+          feedback={errors.name?.message}
+        />
+      </Form.Group>
+      
+      <Form.Group className="mb-3">
+        <Form.Label>{t('email')}</Form.Label>
+        <Input
+          type="email"
+          {...register('email', { 
+            required: t('form.emailRequired'),
+            pattern: {
+              value: EMAIL_REGEX, // Use regex from constants
+              message: t('form.emailInvalid'),
+            },
+          })}
+          isInvalid={!!errors.email}
+          feedback={errors.email?.message}
+        />
+      </Form.Group>
+      
+      <Form.Group className="mb-3">
+        <Form.Label>{t('status')}</Form.Label>
+        <Form.Select
+          {...register('status', {
+            required: t('form.statusRequired'),
+            valueAsNumber: true, // Convert to number
+          })}
+          isInvalid={!!errors.status}
+        >
+          <option value={0}>{t('statusOptions.active')}</option>
+          <option value={1}>{t('statusOptions.inactive')}</option>
+        </Form.Select>
+        {errors.status && (
+          <div className="invalid-feedback d-block">
+            {errors.status.message}
+          </div>
+        )}
+      </Form.Group>
+      
+      <div className="d-flex justify-content-end gap-2 mt-4">
+        {onCancel && (
+          <Button variant="secondary" onClick={onCancel} type="button">
+            {t('cancel')}
+          </Button>
+        )}
+        <Button variant="primary" type="submit" disabled={isSubmitting}>
+          {t('save')}
+        </Button>
+      </div>
+    </Form>
+  );
+};
+
+export default UserForm;
+```
+
+### Using Custom Form Components
+For forms using the custom Form components from `@/components/pure-components/Form`:
+
+```typescript
+import { Form, FormGroup, FormLabel } from '@/components/pure-components/Form';
+import Input from '@/components/pure-components/Form/Input';
+import Button from '@/components/pure-components/Button';
+
+const LoginForm: React.FC = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    mode: 'onChange', // Real-time validation
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+  });
+
+  return (
+    <Form onSubmit={handleSubmit(onSubmit)}>
+      <FormGroup>
+        <FormLabel>{t('email.label')}</FormLabel>
+        <Input
+          type="email"
+          {...register('email', {
+            required: t('email.required'),
+            pattern: {
+              value: EMAIL_REGEX,
+              message: t('email.invalid'),
+            },
+          })}
+          isInvalid={!!errors.email}
+          feedback={errors.email?.message}
+        />
+      </FormGroup>
+      
+      <FormGroup>
+        <FormLabel>{t('password.label')}</FormLabel>
+        <Input
+          type="password"
+          {...register('password', {
+            required: t('password.required'),
+          })}
+          isInvalid={!!errors.password}
+          feedback={errors.password?.message}
+        />
+      </FormGroup>
+      
+      <FormGroup>
+        <Button type="submit" variant="primary">
+          {t('submit')}
+        </Button>
+      </FormGroup>
+    </Form>
+  );
+};
+```
+
+## Form Input Components
+
+Use the custom Input component from `@/components/pure-components/Form/Input`:
+
+```typescript
+import Input from '@/components/pure-components/Form/Input';
+
+// Basic usage
+<Input
+  {...register('fieldName', { required: 'Field is required' })}
+  isInvalid={!!errors.fieldName}
+  feedback={errors.fieldName?.message}
+/>
+
+// With type
+<Input
+  type="email"
+  {...register('email', { required: 'Email is required' })}
+  isInvalid={!!errors.email}
+  feedback={errors.email?.message}
+/>
+
+// With placeholder
+<Input
+  placeholder="Enter your name"
+  {...register('name')}
+/>
+```
+
+## Form Validation
+
+### Inline Validation (Current Implementation)
+
+The codebase uses inline validation with React Hook Form's `register()` function. This is the primary validation method:
+
+#### Basic Validation Patterns
+```typescript
+import { EMAIL_REGEX } from '@/constants/regex';
+import { useTranslations } from 'next-intl';
+
+const t = useTranslations('users');
+
+// Required field
+{...register('name', { required: t('form.nameRequired') })}
+
+// Email validation using utility function (PREFERRED)
+import { getEmailValidationPattern } from '@/utils/form';
+
+{...register('email', {
+  required: t('form.emailRequired'),
+  ...getEmailValidationPattern(t('form.emailInvalid')),
+})}
+
+// Alternative: Direct pattern (not recommended)
+{...register('email', {
+  required: t('form.emailRequired'),
+  pattern: {
+    value: EMAIL_REGEX,
+    message: t('form.emailInvalid'),
+  },
+})}
+
+// Number validation with valueAsNumber
+{...register('status', {
+  required: t('form.statusRequired'),
+  valueAsNumber: true, // Convert string to number
+})}
+
+// Min/Max length
+{...register('password', {
+  required: t('form.passwordRequired'),
+  minLength: {
+    value: 8,
+    message: t('form.passwordMinLength'),
+  },
+})}
+
+// Custom validation function
+{...register('confirmPassword', {
+  validate: (value) => {
+    const password = watch('password');
+    return value === password || t('form.passwordsDoNotMatch');
+  },
+})}
+
+// Using validation utilities for complex validations
+import { validateCommaSeparatedEmails } from '@/utils/form';
+
+{...register('ccEmails', {
+  validate: (value) =>
+    validateCommaSeparatedEmails(value, t('emailConfig.ccEmails.invalid')),
+})}
+```
+
+#### Using Validation Utilities
+Use the `registerField` utility from `@/utils/form`:
+
+```typescript
+import { registerField } from '@/utils/form';
+
+// With predefined validation from FORM_VALIDATION
+<Input
+  {...registerField({
+    register,
+    name: 'email',
+    validation: 'EMAIL', // Uses FORM_VALIDATION.EMAIL
+  })}
+  isInvalid={!!errors.email}
+  feedback={errors.email?.message}
+/>
+```
+
+#### Schema Organization
+Organize schemas by domain in `src/schemas/`:
+
+```
+src/schemas/
+├── userSchema.ts      # User form schemas
+├── authSchema.ts      # Authentication schemas
+├── cmsSchema.ts       # CMS form schemas
+└── index.ts           # Re-exports all schemas
+```
+
+### Validation Constants
+Store reusable validation patterns in `src/constants/`:
+
+```typescript
+// src/constants/regex.ts
+export const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+export const PHONE_REGEX = /^\+?[\d\s-]{10,}$/;
+
+// src/constants/validation.ts
+export const VALIDATION_MESSAGES = {
+  REQUIRED: {
+    EMAIL: 'Email is required',
+    PASSWORD: 'Password is required',
+    NAME: 'Name is required',
+  },
+  INVALID: {
+    EMAIL: 'Please enter a valid email address',
+  },
+} as const;
+
+export const FORM_VALIDATION = {
+  EMAIL: {
+    required: VALIDATION_MESSAGES.REQUIRED.EMAIL,
+    pattern: {
+      value: EMAIL_REGEX,
+      message: VALIDATION_MESSAGES.INVALID.EMAIL,
+    },
+  },
+} as const;
+```
+
+### Zod Schema Validation (Optional/Future)
+
+Zod can be added for schema-based validation. This is optional and not currently used in the codebase:
+
+```typescript
+// Install: npm install zod
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+// Define schema
+export const userSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email'),
+});
+
+// Use with form
+const { register, formState: { errors } } = useForm({
+  resolver: zodResolver(userSchema),
+});
+```
+
+## Advanced Form Patterns
+
+### Using Controller for Complex Components
+
+Use `Controller` for components that don't work with `register()` (e.g., EditorJS, custom components):
+
+```typescript
+import { Controller } from 'react-hook-form';
+import EditorJS from '@/components/pure-components/EditorJS';
+
+const {
+  control,
+  watch,
+  setValue,
+  clearErrors,
+} = useForm<CmsFormValues>();
+
+// Watch content type to conditionally render
+const contentType = watch('content_type');
+
+<Controller
+  name="content"
+  control={control}
+  rules={{
+    validate: (value: any) => {
+      if (contentType === 'LINK') {
+        return (
+          (value && typeof value === 'string' && value.trim() !== '') ||
+          t('form.contentRequired')
+        );
+      }
+      // Custom validation for EditorJS content
+      return hasEditorJSContent(value) || t('form.contentRequired');
+    },
+  }}
+  render={({ field, fieldState }) => (
+    <EditorJS
+      data={field.value || undefined}
+      onChange={(data: EditorJSData) => {
+        field.onChange(data);
+        // Clear errors when valid content is entered
+        if (hasEditorJSContent(data) && fieldState.error) {
+          clearErrors('content');
+        }
+      }}
+      isInvalid={!!fieldState.error}
+      error={fieldState.error?.message}
+    />
+  )}
+/>
+```
+
+### Using watch(), setValue(), and clearErrors()
+
+```typescript
+const {
+  watch,
+  setValue,
+  clearErrors,
+  trigger,
+} = useForm<UserFormValues>();
+
+// Watch single field value
+const status = watch('status');
+const email = watch('email');
+
+// Watch multiple fields at once (PREFERRED when watching multiple fields)
+import { watchFieldValues } from '@/utils/useSyncFormValues';
+
+const { supportFormEnabled, autoReplyEnabled, autoReplyMessage } = watchFieldValues(
+  watch,
+  ['supportFormEnabled', 'autoReplyEnabled', 'autoReplyMessage']
+);
+
+// Set values programmatically
+setValue('status', 1);
+setValue('email', 'new@example.com');
+
+// Clear specific field errors
+clearErrors('email');
+
+// Clear all errors
+clearErrors();
+
+// Manually trigger validation
+trigger('email'); // Validate single field
+trigger(); // Validate all fields
+```
+
+### Syncing Form Values
+
+Use `setFormValues` utility to sync default values:
+
+```typescript
+import { setFormValues } from '@/utils/useSyncFormValues';
+import { useEffect } from 'react';
+
+const {
+  setValue,
+} = useForm<UserFormValues>({
+  defaultValues: initialValues,
+});
+
+useEffect(() => {
+  if (defaultValues) {
+    setFormValues<UserFormValues>(
+      defaultValues,
+      initialValues,
+      setValue
+    );
+  }
+}, [defaultValues, setValue]);
+```
+
+### Form Validation Modes
+
+```typescript
+useForm({
+  mode: 'onChange', // Validate on every change (real-time)
+  // mode: 'onBlur',   // Validate on blur (default)
+  // mode: 'onSubmit', // Validate only on submit
+  // mode: 'all',      // Validate on both change and blur
+});
+```
+
+## Form Integration with Mutations
+
+Connect forms to React Query mutations:
+
+```typescript
+import { useCreateUserMutation } from '@/hooks/user';
+import { useTranslations } from 'next-intl';
+
+const UserForm: React.FC<UserFormProps> = ({ defaultValues, onCancel }) => {
+  const t = useTranslations('users');
+  const createUser = useCreateUserMutation();
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<UserFormValues>({
+    defaultValues: defaultValues || {
+      name: '',
+      email: '',
+      status: 0,
+    },
+  });
+  
+  const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
+    try {
+      await createUser.mutateAsync(data);
+      // Handle success (e.g., show toast, close modal, redirect)
+    } catch (error: any) {
+      // Handle error (e.g., show error toast)
+      console.error('Form submission error:', error);
+    }
+  };
+
+  return (
+    <Form onSubmit={handleSubmit(onSubmit)}>
+      {/* Form fields */}
+    </Form>
+  );
+};
+```
+
+## Form Utilities
+
+### registerField Utility
+
+Use the `registerField` helper from `@/utils/form` for consistent field registration:
+
+```typescript
+import { registerField } from '@/utils/form';
+
+// With validation type from FORM_VALIDATION
+<Input
+  {...registerField({
+    register,
+    name: 'email',
+    validation: 'EMAIL', // Uses FORM_VALIDATION.EMAIL
+  })}
+  isInvalid={!!errors.email}
+  feedback={errors.email?.message}
+/>
+
+// Without validation
+<Input
+  {...registerField({
+    register,
+    name: 'name',
+  })}
+/>
+```
+
+### setFormValues Utility
+
+**ALWAYS use `setFormValues` utility** instead of manually calling `setValue` for each field. This ensures consistency and reduces code duplication.
+
+**Pattern:**
+1. Define `initialValues` constant before the component
+2. Use `setFormValues` in `useEffect` to sync form values from props/API data
+
+```typescript
+import { setFormValues } from '@/utils/useSyncFormValues';
+import { useEffect } from 'react';
+
+// Define initialValues constant BEFORE the component
+const initialValues: Partial<SupportEmailConfigFormValues> = {
+  primaryEmail: '',
+  ccEmails: '',
+  supportFormEnabled: true,
+  formFields: {
+    fullName: { enabled: false, required: false },
+    emailAddress: { enabled: false, required: false },
+    // ... other fields
+  },
+  autoReplyEnabled: true,
+  autoReplyMessage: '',
+};
+
+const SupportEmailConfig: React.FC<SupportEmailConfigProps> = ({
+  defaultValues,
+}) => {
+  const {
+    setValue,
+  } = useForm<SupportEmailConfigFormValues>({
+    defaultValues: initialValues,
+  });
+
+  // Use setFormValues in useEffect to sync values
+  useEffect(() => {
+    if (defaultValues) {
+      setFormValues<SupportEmailConfigFormValues>(
+        defaultValues,
+        initialValues,
+        setValue
+      );
+    }
+  }, [defaultValues, setValue]);
+  
+  // ... rest of component
+};
+```
+
+**Key Points:**
+- ✅ Define `initialValues` as a constant before the component
+- ✅ Use `setFormValues` instead of multiple `setValue` calls
+- ✅ Pass `defaultValues`, `initialValues`, and `setValue` to `setFormValues`
+- ❌ Don't manually call `setValue` for each field in `useEffect`
+
+### watchFieldValues Utility
+
+**Use `watchFieldValues` utility** when watching multiple form fields. This is more efficient than calling `watch()` multiple times and provides cleaner code.
+
+**Pattern:**
+```typescript
+import { watchFieldValues } from '@/utils/useSyncFormValues';
+
+const {
+  watch,
+} = useForm<SupportEmailConfigFormValues>();
+
+// Watch multiple fields at once (PREFERRED)
+const { supportFormEnabled, autoReplyEnabled, autoReplyMessage } = watchFieldValues(
+  watch,
+  ['supportFormEnabled', 'autoReplyEnabled', 'autoReplyMessage']
+);
+
+// Instead of multiple watch calls:
+// ❌ const supportFormEnabled = watch('supportFormEnabled');
+// ❌ const autoReplyEnabled = watch('autoReplyEnabled');
+// ❌ const autoReplyMessage = watch('autoReplyMessage');
+```
+
+**Key Points:**
+- ✅ Use `watchFieldValues` when watching 2+ fields
+- ✅ Returns an object with field names as keys
+- ✅ More efficient than multiple `watch()` calls
+- ✅ Cleaner destructuring syntax
+- ❌ Don't use multiple `watch()` calls for related fields
+
+### formatFormError Utility
+
+Format error messages consistently:
+
+```typescript
+import { formatFormError } from '@/utils/form';
+
+try {
+  await submitForm();
+} catch (error) {
+  const errorMessage = formatFormError(error);
+  // Display error message
+}
+```
+
+### getEmailValidationPattern Utility
+
+Get email validation pattern object for React Hook Form:
+
+```typescript
+import { getEmailValidationPattern } from '@/utils/form';
+
+{...register('email', {
+  required: t('form.emailRequired'),
+  ...getEmailValidationPattern(t('form.emailInvalid')),
+})}
+```
+
+**Key Points:**
+- ✅ Returns pattern object with `EMAIL_REGEX` from constants
+- ✅ Accepts custom error message
+- ✅ Use spread operator to merge with other validation rules
+- ✅ Consistent pattern across all email fields
+- ❌ Don't manually create pattern objects with `EMAIL_REGEX`
+
+### validateCommaSeparatedEmails Utility
+
+Validate comma-separated email addresses (useful for CC/BCC fields):
+
+```typescript
+import { validateCommaSeparatedEmails } from '@/utils/form';
+
+{...register('ccEmails', {
+  validate: (value) =>
+    validateCommaSeparatedEmails(value, t('emailConfig.ccEmails.invalid')),
+})}
+```
+
+**Key Points:**
+- ✅ Returns `true` if valid or empty (handles optional fields)
+- ✅ Returns error message string if invalid
+- ✅ Automatically trims whitespace and filters empty values
+- ✅ Uses `EMAIL_REGEX` from constants for validation
+
+## Special Form Field Patterns
+
+### Checkbox with 0/1 Values
+
+Some forms use 0/1 instead of boolean for checkboxes:
+
+```typescript
+const {
+  register,
+  watch,
+  setValue,
+} = useForm<CmsFormValues>();
+
+<Form.Check
+  type="checkbox"
+  label={t('isAgreement')}
+  {...register('is_agreement')}
+  checked={!!watch('is_agreement')}
+  onChange={(e) => {
+    // Convert boolean to 0/1
+    const value = e.target.checked ? 1 : 0;
+    setValue('is_agreement', value);
+  }}
+/>
+```
+
+### Select with Number Values
+
+Use `valueAsNumber: true` for number selects:
+
+```typescript
+<Form.Select
+  {...register('status', {
+    required: t('form.statusRequired'),
+    valueAsNumber: true, // Convert string to number
+  })}
+  isInvalid={!!errors.status}
+>
+  <option value={0}>{t('statusOptions.active')}</option>
+  <option value={1}>{t('statusOptions.inactive')}</option>
+</Form.Select>
+```
+
+### Conditional Fields Based on Other Fields
+
+Use `watch()` to conditionally render fields:
+
+```typescript
+const contentType = watch('content_type');
+
+{contentType === 'LINK' ? (
+  <Input
+    value={typeof watch('content') === 'string' ? watch('content') : ''}
+    onChange={handleLinkContentChange}
+  />
+) : (
+  <Controller
+    name="content"
+    control={control}
+    render={({ field }) => <EditorJS {...field} />}
+  />
+)}
+```
+
+## Form Error Handling
+
+### Field-Level Errors
+Display errors below each field using React Bootstrap's feedback:
+
+```typescript
+<Input
+  {...register('email', { required: 'Email is required' })}
+  isInvalid={!!errors.email}
+  feedback={errors.email?.message}
+/>
+```
+
+### Form-Level Errors
+Show general form errors at the top:
+
+```typescript
+{loginError && (
+  <div className={styles.errorMessage}>
+    {loginError.message}
+  </div>
+)}
+```
+
+### Server Validation Errors
+Handle API validation errors:
+
+```typescript
+import { setError } from 'react-hook-form';
+
+const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
+  try {
+    await createUser.mutateAsync(data);
+  } catch (error: any) {
+    // Handle field-specific errors from API
+    if (error.errors) {
+      Object.keys(error.errors).forEach((field) => {
+        setError(field as keyof UserFormValues, {
+          type: 'server',
+          message: error.errors[field][0],
+        });
+      });
+    } else {
+      // Handle general error
+      setError('root', {
+        type: 'server',
+        message: error.message || 'An error occurred',
+      });
+    }
+  }
+};
+```
+
+## Form State Management
+
+### Loading States
+- Use `isSubmitting` from `formState` for submit button
+- Disable form fields during submission if needed
+
+```typescript
+const { formState: { isSubmitting } } = useForm();
+
+<Button
+  type="submit"
+  disabled={isSubmitting}
+  loading={isSubmitting}
+>
+  {isSubmitting ? 'Saving...' : 'Save'}
+</Button>
+```
+
+### Reset Form
+Reset form after successful submission:
+
+```typescript
+const { reset } = useForm();
+
+const onSubmit = async (data) => {
+  await createUser.mutateAsync(data);
+  reset(); // Reset to default values
+  // Or reset to specific values
+  reset({ name: '', email: '', status: 0 });
+};
+```
+
+## Accessibility
+
+- **Labels**: Always use `Form.Label` for form fields
+- **Error feedback**: Use `isInvalid` and `feedback` props for accessible error messages
+- **ARIA attributes**: React Bootstrap handles ARIA attributes automatically
+- **Focus management**: Maintain proper focus order
+- **Keyboard navigation**: Ensure all form elements are keyboard accessible
+- **Required fields**: Indicate required fields visually and with `required` attribute
+- **Theme-aware styling**: Form controls automatically use theme-aware CSS variables (`var(--bs-input-bg)`, `var(--bs-input-color)`, etc.) - no additional styling needed
+
+## Internationalization
+
+Use `next-intl` for form labels and validation messages:
+
+```typescript
+import { useTranslations } from 'next-intl';
+
+const t = useTranslations('users');
+
+<Form.Label>{t('name')}</Form.Label>
+<Input
+  {...register('name', { required: t('form.nameRequired') })}
+  isInvalid={!!errors.name}
+  feedback={errors.name?.message}
+/>
+```
+
+Store translations in locale files:
+```json
+// locales/en/users/index.json
+{
+  "name": "Name",
+  "email": "Email",
+  "form": {
+    "nameRequired": "Name is required",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address"
+  }
+}
+```
+
+## Summary of Form Patterns
+
+### Current Implementation
+- ✅ **Inline validation** with React Hook Form's `register()` function
+- ✅ **Custom form components** from `@/components/pure-components/Form`
+- ✅ **Validation constants** from `@/constants/regex` and `@/constants/validation`
+- ✅ **Controller** for complex components (EditorJS, etc.)
+- ✅ **Advanced hooks**: `watch()`, `setValue()`, `clearErrors()`, `trigger()`
+- ✅ **Form utilities**: `registerField()`, `setFormValues()`, `formatFormError()`
+- ✅ **Internationalization** with `next-intl`
+
+### Optional/Future Enhancements
+- 🔄 **Zod schemas** for schema-based validation (can be added)
+- 🔄 **@hookform/resolvers** for Zod integration (already installed)
+
+### Key Patterns
+1. Use `EMAIL_REGEX` from `@/constants/regex` for email validation
+2. Use `valueAsNumber: true` for number inputs/selects
+3. Use `Controller` for components that don't work with `register()`
+4. Use `watch()` for single field or `watchFieldValues()` for multiple fields
+5. Use `setValue()` and `clearErrors()` for programmatic control
+6. Use `mode: 'onChange'` for real-time validation when needed
+7. **ALWAYS use `setFormValues()` utility** to sync default values (define `initialValues` constant before component)
+8. **Use `watchFieldValues()` utility** when watching 2+ fields (more efficient and cleaner)
+9. Use translations from `next-intl` for all user-facing text
+description:
+globs:
+alwaysApply: false
+---

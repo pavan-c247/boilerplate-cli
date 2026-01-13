@@ -1,0 +1,276 @@
+# TypeScript Coding Standards
+
+## Code Style
+- **Indentation**: 2 spaces
+- **Quotes**: Single quotes for strings
+- **Semicolons**: Always required
+- **Trailing commas**: Use in objects and arrays (helps with git diffs)
+- **Line length**: Prefer keeping lines under 100 characters (ESLint may enforce this)
+
+## TypeScript Configuration
+- **Strict mode**: Always enabled in [tsconfig.json](mdc:tsconfig.json)
+  - `strict: true` enables all strict type checking options
+  - `noEmit: true` (Next.js handles compilation)
+  - `esModuleInterop: true` for better module compatibility
+- **Path aliases**: Configured in `tsconfig.json` for `@/` imports
+- **Target**: ES2017 for modern JavaScript features
+
+## TypeScript Best Practices
+
+### Type Safety
+- **Never use `any`**: Use `unknown` or proper typing instead
+- **Avoid type assertions**: Prefer type guards and proper typing
+- **Use const assertions**: For literal types and readonly arrays
+  ```typescript
+  const STATUS = ['active', 'inactive'] as const;
+  type Status = typeof STATUS[number]; // 'active' | 'inactive'
+  ```
+
+### Interface vs Type: When to Use Each
+
+- **Use `interface`** for object shapes, data models, and component/class props—especially if you want to extend or implement them later.
+- **Use `type`** for unions, intersections, utility types, mapped types, primitives, tuples, and function signatures.
+
+| Use Case                        | `interface` | `type` |
+|----------------------------------|:----------:|:------:|
+| Object shapes                    |     ✔️      |   ✔️    |
+| Component props                  |     ✔️      |   ✔️    |
+| Class implementation             |     ✔️      |        |
+| Extending (inheritance)          |     ✔️      |   ✔️    |
+| Declaration merging              |     ✔️      |        |
+| Unions/intersections             |            |   ✔️    |
+| Primitives, tuples, functions    |            |   ✔️    |
+| Utility/mapped types             |            |   ✔️    |
+| Template literal types           |            |   ✔️    |
+
+**Default:** Use `interface` for objects and props, `type` for everything else.
+
+### Type Organization
+- **Shared types**: Place in `src/types/` organized by domain
+- **Component-specific types**: Can be in component folder if not shared
+- **Service types**: Request/response types can be in service file if not shared
+- **Re-exports**: Use `src/types/index.ts` to re-export all types
+
+## Import/Export Standards
+
+### Import Order
+Follow this order for imports:
+1. React and Next.js imports
+2. Third-party libraries (react-bootstrap, @tanstack/react-query, etc.)
+3. Internal components (using `@/` aliases)
+4. Hooks and services
+5. Utilities and constants
+6. Types and interfaces (use `import type` for type-only imports)
+7. Styles (SCSS modules)
+
+```typescript
+// 1. React and Next.js
+import React from 'react';
+import { useTranslations } from 'next-intl';
+
+// 2. Third-party libraries
+import { Button as BootstrapButton } from 'react-bootstrap';
+import { useQuery } from '@tanstack/react-query';
+
+// 3. Internal components
+import { Input } from '@/components/pure-components/Form/Input';
+import { Button } from '@/components/pure-components/Button';
+
+// 4. Hooks and services
+import { useUsersQuery } from '@/hooks/user';
+import { userService } from '@/services/user';
+
+// 5. Utilities and constants
+import { formatDate } from '@/utils/formatDate';
+import { VALIDATION_MESSAGES } from '@/constants/validation';
+
+// 6. Types (use import type for type-only imports)
+import type { User } from '@/types/user';
+import type { ButtonProps } from '@/components/pure-components/Button';
+
+// 7. Styles
+import styles from './ComponentName.module.scss';
+```
+
+### Export Patterns
+- **Default exports**: Use for components (allows cleaner imports)
+- **Named exports**: Use for utilities, hooks, services, types
+- **Barrel exports**: Use `index.tsx` files to re-export components when needed
+
+```typescript
+// Component (default export)
+export default ComponentName;
+
+// Service (named exports)
+export const userService = { ... };
+export interface UserCreateRequest { ... }
+
+// Hooks (named exports)
+export function useUsersQuery() { ... }
+export function useCreateUserMutation() { ... }
+
+// Types (named exports)
+export interface User { ... }
+export type UserStatus = 'active' | 'inactive';
+```
+
+## Component Patterns
+
+### Props Interface
+- **Naming**: Always use `ComponentNameProps` format
+- **Export**: Export the props interface
+- **Optional props**: Mark optional with `?` and provide defaults in component
+- **Required props**: Don't mark with `?` and don't provide defaults
+
+```typescript
+export interface ButtonProps {
+  // Required props
+  onClick: () => void;
+  
+  // Optional props with defaults
+  variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
+  loading?: boolean;
+  
+  // Content
+  children?: React.ReactNode;
+  icon?: React.ReactNode;
+  
+  // Styling
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+const Button: React.FC<ButtonProps> = ({
+  onClick, // Required, no default
+  variant = 'primary', // Optional with default
+  size = 'medium',
+  disabled = false,
+  loading = false,
+  children,
+  icon,
+  className = '',
+  style,
+}) => {
+  // Component implementation
+};
+```
+
+### React.FC Pattern
+- **Use `React.FC<Props>`**: For component type definition
+- **Benefits**: Provides `children` prop type and return type checking
+- **Alternative**: Can use function declaration with explicit return type
+
+```typescript
+// Preferred
+const Component: React.FC<ComponentProps> = ({ prop1, prop2 }) => {
+  return <div>...</div>;
+};
+
+// Alternative
+function Component({ prop1, prop2 }: ComponentProps): JSX.Element {
+  return <div>...</div>;
+}
+```
+
+### Event Handler Types
+- **Mouse events**: `React.MouseEvent<HTMLElement>`
+- **Form events**: `React.FormEvent<HTMLFormElement>`
+- **Input events**: `React.ChangeEvent<HTMLInputElement>`
+- **Keyboard events**: `React.KeyboardEvent<HTMLElement>`
+
+```typescript
+export interface FormProps {
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+```
+
+### Generic Components
+Use generics for reusable components:
+
+```typescript
+export interface TableProps<T> {
+  data: T[];
+  columns: TableColumn<T>[];
+  renderRow?: (item: T) => React.ReactNode;
+}
+
+function Table<T>({ data, columns, renderRow }: TableProps<T>) {
+  // Implementation
+}
+```
+
+## ESLint Rules
+
+The project uses ESLint with these key rules:
+- **Unused imports**: `unused-imports/no-unused-imports: error`
+- **Import sorting**: `simple-import-sort/imports: error`
+- **No console**: `no-console: error` (except `console.warn` and `console.error`)
+- **Equality**: `eqeqeq: error` (use `===` and `!==`)
+- **Const preference**: `prefer-const: error`
+- **No var**: `no-var: error`
+
+## Type Definitions
+
+### Service Types
+Define request/response types in service files:
+
+```typescript
+// src/services/user.ts
+export interface UserCreateRequest {
+  name: string;
+  email: string;
+  status: number;
+}
+
+export interface PaginatedResponse<T> {
+  total: number;
+  users: T[];
+}
+```
+
+### Shared Types
+Define shared types in `src/types/`:
+
+```typescript
+// src/types/user.ts
+export type UserListItem = {
+  id: string | number;
+  name: string;
+  email: string;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+};
+```
+
+### Component Types
+Define component-specific types in component files or `types.ts`:
+
+```typescript
+// ComponentName.tsx
+export interface ComponentNameProps {
+  title: string;
+  variant?: 'primary' | 'secondary';
+}
+```
+
+## Best Practices Summary
+
+1. ✅ Always use TypeScript strict mode
+2. ✅ Use `interface` for props and object shapes
+3. ✅ Use `type` for unions, intersections, and utilities
+4. ✅ Never use `any` - use `unknown` or proper types
+5. ✅ Use `import type` for type-only imports
+6. ✅ Export props interfaces for reusability
+7. ✅ Use `React.FC<Props>` for components
+8. ✅ Provide defaults for optional props in component parameters
+9. ✅ Use proper event handler types from React
+10. ✅ Organize types by domain in `src/types/`
+description:
+globs:
+alwaysApply: false
+---

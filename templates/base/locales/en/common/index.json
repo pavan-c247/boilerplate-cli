@@ -1,0 +1,100 @@
+{
+  "loading": {
+    "default": "Loading...",
+    "submitting": "Submitting...",
+    "processing": "Processing..."
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "serverError": "Something went wrong. Please try again.",
+    "unauthorized": "You are not authorized to perform this action",
+    "notFound": "The requested resource was not found",
+    "notFoundPage": "404 Page Not Found",
+    "error": "An error occurred. Please try again."
+  },
+  "success": {
+    "saved": "Changes saved successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "submitSuccess": "Form submitted successfully"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "reset": "Reset"
+  },
+  "validation": {
+    "email": {
+      "required": "Email is required",
+      "invalid": "Please enter a valid email address"
+    },
+    "password": {
+      "required": "Password is required"
+    }
+  },
+  "profile": {
+    "editProfile": "Edit Your Profile",
+    "profileImage": "Profile Image",
+    "uploadPhoto": "Upload new profile photo",
+    "removePhoto": "Remove",
+    "photoHelp": "Choose image in JPEG, JPG, PNG format and max size up to 5MB.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "jobTitle": "Job Title",
+    "email": "Email",
+    "required": "(Required)",
+    "profileInfo": "Profile Information",
+    "passwordAnd2fa": "Password & Two-step Authentication",
+    "editPassword": "Edit Password",
+    "password": "Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "phone": "Phone Number SMS",
+    "save": "Save Profile",
+    "cancel": "Cancel",
+    "changePassword": "Change Password"
+  },
+  "generic": {
+    "filter": {
+      "all": "All {label}",
+      "appliedCount": "{label} (+{count} more)",
+      "plusCount": "+{count}"
+    }
+  },
+  "filter": {
+    "text": "Filter",
+    "from": "From",
+    "to": "To",
+    "reset": "Reset"
+  },
+  "buttons": {
+    "text": {
+      "goToLogin": "Go to Login",
+      "signUpAgain": "Sign Up Again"
+    }
+  },
+  "notification":{
+    "noNewNotifications": "No new notifications",
+    "failedNotification":"Failed to load notifications",
+    "noMoreNotifications":"No more notifications",
+    "loadingMore":"Loading more..."
+  },
+  "multiselect": {
+    "searchPlaceholder": "Type to search...",
+    "noOptions": "No options available",
+    "removeTag": "Remove {label}"
+  },
+  "title": "Title",
+  "createdAt": "Created At",
+  "updatedAt": "Updated At",
+  "actionsText": "Actions",
+  "addButton": "Add {entityName}",
+  "deleteConfirmation": "Are you sure you want to delete"
+}
