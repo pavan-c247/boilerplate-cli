@@ -1,0 +1,34 @@
+{
+  "modules": {
+    "cms": {
+      "paths": [
+        "src/app/(view)/cms",
+        "src/components/pages/cms",
+        "src/services/cms.ts",
+        "src/hooks/cms.ts"
+      ]
+    },
+    "faq": {
+      "paths": [
+          "src/app/(view)/faq",
+          "src/components/pages/faq",
+          "src/services/faq.ts",
+          "src/hooks/faq.ts"
+      ]
+    },
+    "documents": {
+      "paths": [
+        "src/app/(view)/documents",
+        "src/components/pages/documents",
+        "src/services/documents.ts",
+        "src/hooks/documents.ts"
+      ]
+    },
+    "bulk-import": {
+      "paths": [
+        "src/app/(view)/bulk-import",
+        "src/components/pages/bulk-import"
+      ]
+    }
+  }
+}
