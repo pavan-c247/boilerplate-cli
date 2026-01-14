@@ -10,6 +10,7 @@ import { Col } from "react-bootstrap";
 import { USER_ROLES } from "@/constants";
 import { useAuth } from "@/hooks/auth";
 import { SidebarMenuItem } from "@/types/sidebar";
+import { isModuleEnabled } from "@/helper/isModuleEnabled";
 
 import { SIDE_BAR_MENU } from "./config";
 import styles from "./styles.module.scss";
@@ -39,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onCollapseChange }) => {
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
   const t = useTranslations("sidebar");
-    const { user } = useAuth();
+  const { user } = useAuth();
 
   const isExpanded = !isCollapsed || isHoverExpanded;
 
@@ -52,6 +53,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onCollapseChange }) => {
     const filter = (items: SidebarMenuItem[], roleId: number): SidebarMenuItem[] => {
       return items
         .filter((item) => {
+          // Module enabled check
+          if (!isModuleEnabled(item.module)) {
+            return false;
+          }
           // If no allowedRoles specified, default to Admin only
           if (!item.allowedRoles || item.allowedRoles.length === 0) {
             return roleId === USER_ROLES.ADMIN;
@@ -188,9 +193,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onCollapseChange }) => {
 
       <Col
         xs="auto"
-        className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ""} ${
-          isHoverExpanded ? styles.hoverExpanded : ""
-        } d-flex flex-column`}
+        className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ""} ${isHoverExpanded ? styles.hoverExpanded : ""
+          } d-flex flex-column`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

@@ -1,13 +1,18 @@
 {
-  "name": "frontend-theme",
+  "name": "@pavan-c247/frontend-theme",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "frontend-theme": "dist/index.js"
+    "frontend-theme": "dist/cli/index.js"
   },
+  "files": [
+    "dist",
+    "templates"
+  ],
   "scripts": {
     "dev": "tsx cli/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/cli/index.js"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
@@ -19,5 +24,17 @@
   "dependencies": {
     "fs-extra": "^11.3.3",
     "prompts": "^2.4.2"
+  },
+  "description": "CLI to generate a Next.js boilerplate with optional feature modules",
+  "license": "MIT",
+  "keywords": [
+    "cli",
+    "nextjs",
+    "boilerplate",
+    "scaffold",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=18"
   }
 }

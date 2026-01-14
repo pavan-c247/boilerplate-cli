@@ -6,7 +6,9 @@ import prompts from "prompts";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CLI_ROOT = path.resolve();
+// const CLI_ROOT = path.resolve();
+// dist/cli → project root - for build
+const CLI_ROOT = path.resolve(__dirname, "..", "..");
 const TEMPLATE_DIR = path.join(CLI_ROOT, "templates/base");
 const META_FILE = path.join(CLI_ROOT, "templates/meta/modules.json");
 const MANIFEST_FILE = path.join(TEMPLATE_DIR, "modules.manifest.json");
@@ -95,6 +97,27 @@ async function pruneModules(targetDir: string, selectedModules: string[]) {
   }
 }
 
+// Write enabled modules config
+async function writeEnabledModulesConfig(
+  targetDir: string,
+  selectedModules: string[]
+) {
+  const configDir = path.join(targetDir, "src/config");
+  const configFile = path.join(configDir, "enabled-modules.json");
+
+  await fs.ensureDir(configDir);
+
+  await fs.writeJson(
+    configFile,
+    {
+      modules: selectedModules,
+    },
+    { spaces: 2 }
+  );
+
+  console.log("Generated src/config/enabled-modules.json");
+}
+
 // Cleanup function to remove created directory
 async function cleanup(targetDir: string) {
   try {
@@ -142,6 +165,8 @@ export async function init() {
 
     console.log("Selected modules:", selectedModules);
     await pruneModules(targetDir, selectedModules);
+
+    await writeEnabledModulesConfig(targetDir, selectedModules);
 
     console.log(`Project "${projectName}" created successfully`);
     console.log(`cd ${projectName} && yarn install && yarn dev`);

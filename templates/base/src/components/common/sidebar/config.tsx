@@ -37,6 +37,7 @@ export const SIDE_BAR_MENU: SidebarMenuItem[] = [
     icon: <Book size={TOP_LEVEL_ICON_SIZE} />,
     path: "/cms",
     allowedRoles: [USER_ROLES.ADMIN],
+    module: "cms",
   },
   {
     id: "documents",
@@ -44,12 +45,14 @@ export const SIDE_BAR_MENU: SidebarMenuItem[] = [
     icon: <FileText size={TOP_LEVEL_ICON_SIZE} />,
     path: "/documents",
     allowedRoles: [USER_ROLES.ADMIN],
+    module: "documents",
   },
   {
     id: "bulk-import",
     labelKey: "bulkImport",
     icon: <Upload size={TOP_LEVEL_ICON_SIZE} />,
     allowedRoles: [USER_ROLES.ADMIN],
+    module: "bulk-import",
     children: [
       {
         id: "bulk-import-faq",
@@ -57,6 +60,7 @@ export const SIDE_BAR_MENU: SidebarMenuItem[] = [
         icon: <MessageCircle size={CHILD_ICON_SIZE} />,
         path: "/bulk-import/faq",
         allowedRoles: [USER_ROLES.ADMIN],
+        module: "bulk-import",
       },
       {
         id: "bulk-import-user",
@@ -64,9 +68,10 @@ export const SIDE_BAR_MENU: SidebarMenuItem[] = [
         icon: <Users size={CHILD_ICON_SIZE} />,
         path: "/bulk-import/users",
         allowedRoles: [USER_ROLES.ADMIN],
+        module: "bulk-import",
       },
     ],
-  },
+  },  
   {
     id: "component",
     labelKey: "component",
@@ -169,6 +174,7 @@ export const SIDE_BAR_MENU: SidebarMenuItem[] = [
     icon: <MessageCircle size={TOP_LEVEL_ICON_SIZE} />,
     path: "/faq",
     allowedRoles: [USER_ROLES.ADMIN],
+    module: "faq",
   },
   {
     id: "Support Email",

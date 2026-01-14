@@ -11,8 +11,8 @@
     ======================== */
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "target": "ESNext",
-
+   //  "target": "ESNext",
+    "target": "ES2022",
     /* ========================
        Runtime Environment
     ======================== */
@@ -42,7 +42,8 @@
     /* ========================
        Misc
     ======================== */
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "include": ["cli"]
 }

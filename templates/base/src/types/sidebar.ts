@@ -5,4 +5,5 @@ export interface SidebarMenuItem {
     path?: string;
     children?: SidebarMenuItem[];
     allowedRoles: number[]; // Role IDs that can see this menu item (e.g., [1] for Admin, [2] for User)
+    module?: string;
 }
