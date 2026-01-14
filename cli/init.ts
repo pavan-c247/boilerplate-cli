@@ -32,7 +32,7 @@ async function getProjectName(): Promise<string | null> {
 }
 
 // Prompt for modules
-async function selectModules(): Promise<string[]> {
+async function selectModules(): Promise<string[] | null> {
   const meta = await fs.readJson(META_FILE);
   const choices: ModuleChoice[] = Object.entries(meta.modules).map(([key, val]: any) => ({
     title: val.label,
@@ -41,14 +41,29 @@ async function selectModules(): Promise<string[]> {
     selected: val.default || false,
   }));
 
-  const response = await prompts({
-    type: "multiselect",
-    name: "modules",
-    message: "Select modules to include:",
-    choices,
-  });
+  while (true) {
+    const response = await prompts({
+      type: "multiselect",
+      name: "modules",
+      message: "Select modules to include (at least one required):",
+      choices,
+      instructions: true,
+      hint: "- Space to select. Return to submit"
+    });
 
-  return response.modules || [];
+    // Check if user cancelled (CTRL+C or ESC)
+    if (response.modules === undefined) {
+      return null;
+    }
+
+    // Check if at least one module is selected
+    if (response.modules.length === 0) {
+      console.log("You must select at least one module. Please try again.\n");
+      continue;
+    }
+
+    return response.modules;
+  }
 }
 
 // Copy base template
@@ -80,6 +95,18 @@ async function pruneModules(targetDir: string, selectedModules: string[]) {
   }
 }
 
+// Cleanup function to remove created directory
+async function cleanup(targetDir: string) {
+  try {
+    if (await fs.pathExists(targetDir)) {
+      await fs.remove(targetDir);
+      console.log(`Cleaned up: Removed directory "${path.basename(targetDir)}"`);
+    }
+  } catch (cleanupError) {
+    console.error(`Failed to cleanup directory: ${cleanupError}`);
+  }
+}
+
 // init function
 export async function init() {
   const projectName = await getProjectName();
@@ -93,48 +120,40 @@ export async function init() {
 
   console.log("Creating project...");
 
-  await fs.ensureDir(targetDir);
-  await copyBase(targetDir);
+  let dirCreated = false;
 
-  const selectedModules = await selectModules();
-  await pruneModules(targetDir, selectedModules);
+  try {
+    // Create the target directory
+    await fs.ensureDir(targetDir);
+    dirCreated = true;
 
-  console.log(`Project "${projectName}" created successfully`);
-  console.log(`cd ${projectName} && yarn install && yarn dev`);
+    // Copy base template
+    await copyBase(targetDir);
+
+    // Select and prune modules
+    const selectedModules = await selectModules();
+
+    // Check if user cancelled module selection
+    if (selectedModules === null) {
+      console.log("\nProject creation cancelled");
+      await cleanup(targetDir);
+      process.exit(0);
+    }
+
+    console.log("Selected modules:", selectedModules);
+    await pruneModules(targetDir, selectedModules);
+
+    console.log(`Project "${projectName}" created successfully`);
+    console.log(`cd ${projectName} && yarn install && yarn dev`);
+  } catch (error) {
+    console.error("Error during project creation:", error);
+
+    // Revert by removing the created directory
+    if (dirCreated) {
+      await cleanup(targetDir);
+    }
+
+    console.log("Project creation failed and changes have been reverted");
+    process.exit(1);
+  }
 }
-
-
-
-
-
-// export async function init() {
-//     const response = await prompts({
-//         type: "text",
-//         name: "projectName",
-//         message: "Project name:",
-//         validate: (value: string) =>
-//             value.trim().length > 0 ? true : "Project name cannot be empty",
-//     });
-
-//     const projectName = response.projectName;
-
-//     if (!projectName) {
-//         console.log("❌ Project creation cancelled");
-//         return;
-//     }
-
-//     const templateDir = path.resolve(__dirname, "../templates/base");
-//     const targetDir = path.resolve(process.cwd(), projectName);
-
-//     if (await fs.pathExists(targetDir)) {
-//         console.log(`❌ Directory "${projectName}" already exists`);
-//         return;
-//     }
-
-//     console.log("📦 Creating project...");
-
-//     await fs.copy(templateDir, targetDir);
-
-//     console.log(`✅ Project "${projectName}" created successfully`);
-//     console.log(`👉 cd ${projectName}`);
-// }
