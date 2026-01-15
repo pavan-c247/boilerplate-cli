@@ -16,16 +16,53 @@ This tool helps teams avoid bloated boilerplates by letting you **select feature
 
 ---
 
-## 🚀 Quick Start (Recommended)
+## 🚀 Quick Start
 
 You **do not need to install anything globally**.
 
-Run the CLI directly using `npx`:
+The CLI can be executed in **two ways**:
+
+---
+
+### ✅ Option 1: Run via npm (Recommended)
+
+This is the **recommended and production-ready approach**.
 
 ```bash
 npx @pavan-c247/frontend-theme
 
 ```
+
+**Why use this?**
+
+- Stable, versioned releases
+- Faster installs (npm CDN)
+- Industry-standard distribution
+- Best for teams and long-term usage
+
+---
+
+### ⚠️ Option 2: Run directly from GitHub
+
+This is useful for **internal testing or experimentation**.
+
+```bash
+npx https://github.com/pavan-c247/boilerplate-cli.git
+
+```
+
+**Important notes:**
+
+- The GitHub repository is temporarily downloaded and installed
+- No version pinning (always runs latest commit)
+- Slower than npm-based execution
+- Not recommended for production teams
+
+> GitHub-based execution behaves similarly to npm-based npx,
+> 
+> 
+> but lacks release and version guarantees.
+> 
 
 ---
 
@@ -248,7 +285,8 @@ No CLI logic changes required.
 
 ## 📌 Common Notes
 
-- Use `npx` instead of `npm install`
+- Prefer **npm-based `npx`** for production usage
+- GitHub-based execution is best for testing or internal use
 - The CLI does **not** install dependencies automatically
 - Always `cd` into the generated folder before running commands
 
