@@ -110,7 +110,8 @@ async function writeEnabledModulesConfig(
   await fs.writeJson(
     configFile,
     {
-      modules: selectedModules,
+      mode: "selective",
+      modules: selectedModules
     },
     { spaces: 2 }
   );
