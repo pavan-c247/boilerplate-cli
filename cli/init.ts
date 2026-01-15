@@ -2,6 +2,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "fs-extra";
 import prompts from "prompts";
+import os from "node:os";
+import crypto from "node:crypto";
+import { exec } from "node:child_process";
+import util from "node:util";
+import { BOILERPLATE_REPO, BOILERPLATE_BRANCH } from "./constants.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +24,53 @@ interface ModuleChoice {
   value: string;
   description?: string;
   default?: boolean;
+}
+
+type TemplateSource = "local" | "github";
+
+const execAsync = util.promisify(exec);
+
+// Generate a unique temporary directory
+function getTempDir() {
+  return path.join(
+    os.tmpdir(),
+    `frontend-theme-${crypto.randomUUID()}`
+  );
+}
+
+// Get manifest file path in target directory
+function getManifestFile(targetDir: string) {
+  return path.join(targetDir, "modules.manifest.json");
+}
+
+// Prompt for template source
+async function selectTemplateSource(): Promise<TemplateSource> {
+  const response = await prompts({
+    type: "select",
+    name: "source",
+    message: "Select boilerplate source:",
+    choices: [
+      { title: "GitHub (latest dev branch)", value: "github" },
+      { title: "Local template (bundled)", value: "local" }
+    ],
+    initial: 0
+  });
+
+  return response.source ?? "github";
+}
+
+// Clone boilerplate from GitHub
+async function cloneFromGitHub(tempDir: string) {
+  console.log("Cloning boilerplate from GitHub...");
+
+  await execAsync(
+    `git clone --depth=1 --branch ${BOILERPLATE_BRANCH} ${BOILERPLATE_REPO} "${tempDir}"`
+  );
+
+  // Remove git history
+  await fs.remove(path.join(tempDir, ".git"));
+
+  console.log("Boilerplate cloned successfully");
 }
 
 // Prompt for project name
@@ -69,24 +122,41 @@ async function selectModules(): Promise<string[] | null> {
 }
 
 // Copy base template
-async function copyBase(targetDir: string) {
-  console.log("Copying template files...");
+async function copyBase(
+  targetDir: string,
+  source: TemplateSource
+) {
+  console.log("Preparing boilerplate...");
 
-  // Copy everything from TEMPLATE_DIR into targetDir
-  await fs.copy(TEMPLATE_DIR, targetDir, { overwrite: true });
+  if (source === "local") {
+    await fs.copy(TEMPLATE_DIR, targetDir, { overwrite: true });
+    console.log("Boilerplate copied from local template");
+    return;
+  }
 
-  console.log("Template copied successfully");
+  const tempDir = getTempDir();
+
+  try {
+    await cloneFromGitHub(tempDir);
+    await fs.copy(tempDir, targetDir, { overwrite: true });
+  } finally {
+    await fs.remove(tempDir);
+  }
 }
 
 // Prune unselected modules
-async function pruneModules(targetDir: string, selectedModules: string[]) {
-  const manifest = await fs.readJson(MANIFEST_FILE);
+async function pruneModules(
+  targetDir: string,
+  selectedModules: string[]
+) {
+  const manifestFile = getManifestFile(targetDir);
+  const manifest = await fs.readJson(manifestFile);
+
   const allModules = Object.keys(manifest.modules);
 
   for (const moduleName of allModules) {
     if (!selectedModules.includes(moduleName)) {
-      const paths = manifest.modules[moduleName].paths;
-      for (const p of paths) {
+      for (const p of manifest.modules[moduleName].paths) {
         const fullPath = path.join(targetDir, p);
         if (await fs.pathExists(fullPath)) {
           await fs.remove(fullPath);
@@ -134,12 +204,16 @@ async function cleanup(targetDir: string) {
 // init function
 export async function init() {
   const projectName = await getProjectName();
-  if (!projectName) return console.log("Project creation cancelled");
+  if (!projectName) {
+    console.log("Project creation cancelled");
+    return;
+  }
 
   const targetDir = path.resolve(process.cwd(), projectName);
 
   if (await fs.pathExists(targetDir)) {
-    return console.log(`Directory "${projectName}" already exists`);
+    console.log(`Directory "${projectName}" already exists`);
+    return;
   }
 
   console.log("Creating project...");
@@ -147,34 +221,40 @@ export async function init() {
   let dirCreated = false;
 
   try {
-    // Create the target directory
+    // 1️⃣ Create the target directory
     await fs.ensureDir(targetDir);
     dirCreated = true;
 
-    // Copy base template
-    await copyBase(targetDir);
+    // 2️⃣ Select template source (local vs GitHub)  ✅ NEW
+    const source = await selectTemplateSource();
 
-    // Select and prune modules
+    // 3️⃣ Copy boilerplate from selected source  🔁 MODIFIED
+    await copyBase(targetDir, source);
+
+    // 4️⃣ Select modules
     const selectedModules = await selectModules();
 
-    // Check if user cancelled module selection
+    // Handle user cancellation
     if (selectedModules === null) {
       console.log("\nProject creation cancelled");
       await cleanup(targetDir);
       process.exit(0);
     }
 
+    // 5️⃣ Prune unselected modules
     console.log("Selected modules:", selectedModules);
     await pruneModules(targetDir, selectedModules);
 
+    // 6️⃣ Write enabled-modules.json
     await writeEnabledModulesConfig(targetDir, selectedModules);
 
+    // 7️⃣ Success message
     console.log(`Project "${projectName}" created successfully`);
     console.log(`cd ${projectName} && yarn install && yarn dev`);
   } catch (error) {
     console.error("Error during project creation:", error);
 
-    // Revert by removing the created directory
+    // Rollback if something failed
     if (dirCreated) {
       await cleanup(targetDir);
     }
