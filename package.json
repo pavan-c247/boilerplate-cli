@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "tsx cli/index.ts",
     "build": "tsc",
-    "start": "node dist/cli/index.js"
+    "start": "node dist/cli/index.js",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
